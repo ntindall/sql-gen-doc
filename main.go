@@ -3,13 +3,19 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	// We must import the mysql driver as it is required by sqlx.
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+)
+
+const (
+	defaultBufferSize = 65536
 )
 
 var (
@@ -114,13 +120,84 @@ func main() {
 		markdown += formatDescription(tableName, description)
 	}
 
-	var out io.Writer = os.Stdout
-	if *flagOutfile != "" {
-		out, err = os.Create(*flagOutfile)
-		if err != nil {
-			logger.Fatalf("couldn't open %s for writing. reason: %s", *flagOutfile, err)
+	if *flagOutfile == "" {
+		fmt.Fprintf(os.Stdout, markdown)
+	} else {
+		writeToFile(*flagOutfile, markdown)
+	}
+}
+
+func insertBetweenTags(
+	file string,
+	markdown string,
+) string {
+	startTag := "<!-- sql-gen-doc BEGIN -->"
+	endTag := "<!-- sql-gen-doc END -->"
+
+	// r := strings.NewReplacer(" ", "", "\t", "")
+	// stripped := r.Replace(file)
+
+	startIdx := strings.Index(file, startTag)
+	endIdx := strings.Index(file, endTag)
+	logger.Print(startIdx, endIdx)
+
+	if startIdx == -1 || endIdx == -1 {
+		logger.Printf("returning markdown")
+		return markdown
+	}
+
+	startIdx += len(startTag)
+	endIdx += len(endTag)
+	return file[:startIdx] + "\n" + markdown + "\n"
+}
+
+func writeToFile(
+	filename string,
+	markdown string,
+) {
+	file := ""
+	out, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR, 0666)
+	defer out.Close()
+
+	if err != nil {
+		logger.Fatalf("couldn't open %s for writing. reason: %s", *flagOutfile, err)
+	}
+
+	n := defaultBufferSize
+	for {
+		buffer := make([]byte, n)
+
+		n, err = out.Read(buffer)
+		if err != nil && err != io.EOF {
+			logger.Fatalf("error while reading. reason: %s", err)
+		}
+
+		file += string(buffer)
+
+		if n == 0 || err == io.EOF {
+			break
 		}
 	}
 
-	out.Write([]byte(markdown))
+	// If the existing file is annotated with the requisite comments, we insert
+	// between them.
+	processedMarkdown := insertBetweenTags(file, markdown)
+
+	// Reset the fd before writing
+	out.Seek(0, 0)
+	out.Truncate(int64(len(processedMarkdown)))
+
+	remainingIdx := 0
+	for {
+		logger.Print("iterating")
+		written, err := out.WriteString(processedMarkdown[remainingIdx:])
+		if err != nil {
+			logger.Fatalf("error while writing. reason: %s", err)
+		}
+
+		if written == len(processedMarkdown) {
+			break
+		}
+		remainingIdx += written
+	}
 }
