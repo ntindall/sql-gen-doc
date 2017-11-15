@@ -105,10 +105,12 @@ func getFormatSpec(columns []columnDescription) formatSpec {
 	return spec
 }
 
+// TODO TEST
 func makeTitle(s string) string {
 	return "### " + s + "\n"
 }
 
+// TODO TEST
 func formatDescription(
 	table string,
 	columns []columnDescription,
@@ -122,11 +124,10 @@ func formatDescription(
 		tableMarkdown += c.Format(formatSpec)
 	}
 
-	tableMarkdown += "\n"
-
 	return tableMarkdown
 }
 
+// TODO TEST
 func insertBetweenTags(
 	file string,
 	markdown string,

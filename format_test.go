@@ -185,3 +185,77 @@ func TestGetFormatSpec(t *testing.T) {
 		assert.Equal(t, tc.expectation, actual)
 	}
 }
+
+// table abstraction -> markdown conversion
+func TestFormatDescrption(t *testing.T) {
+	testcases := []struct {
+		desc        string
+		tablename   string
+		cds         []columnDescription
+		expectation string
+	}{
+		{
+			desc:      "works with just one column",
+			tablename: "simple_table",
+			cds: []columnDescription{
+				{
+					Field: "id",
+					Type:  "bigint(20) unsigned",
+					Null:  "NO",
+					Key:   "PRI",
+					Extra: "PRIMARY KEY",
+				},
+			},
+			expectation: `### simple_table
+| Field | Type                | Null | Key | Default | Extra       |
+|------------------------------------------------------------------|
+| id    | bigint(20) unsigned | NO   | PRI | NULL    | PRIMARY KEY |
+`,
+		},
+		{
+			desc:      "works with more complicated table",
+			tablename: "complex_table",
+			cds: []columnDescription{
+				{
+					Field: "id",
+					Type:  "bigint(20) unsigned",
+					Null:  "NO",
+					Key:   "PRI",
+					Extra: "PRIMARY KEY",
+				},
+				{
+					Field:   "created",
+					Type:    "timestamp(6)",
+					Null:    "NO",
+					Default: sql.NullString{"CURRENT_TIMESTAMP(6)", true},
+				},
+				{
+					Field: "indexed_column",
+					Type:  "bigint(20) unsigned",
+					Null:  "NO",
+					Key:   "MUL",
+				},
+				{
+					Field: "request_id",
+					Type:  "varchar(255)",
+					Null:  "YES",
+				},
+			},
+			expectation: `### complex_table
+| Field          | Type                | Null | Key | Default              | Extra       |
+|----------------------------------------------------------------------------------------|
+| id             | bigint(20) unsigned | NO   | PRI | NULL                 | PRIMARY KEY |
+| created        | timestamp(6)        | NO   |     | CURRENT_TIMESTAMP(6) |             |
+| indexed_column | bigint(20) unsigned | NO   | MUL | NULL                 |             |
+| request_id     | varchar(255)        | YES  |     | NULL                 |             |
+`,
+		},
+	}
+
+	for i, tc := range testcases {
+		t.Logf("test case %d: %s", i, tc.desc)
+		actual := formatDescription(tc.tablename, tc.cds)
+		assert.Equal(t, tc.expectation, actual)
+	}
+
+}

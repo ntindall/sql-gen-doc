@@ -51,6 +51,7 @@ func main() {
 		}
 
 		markdown += formatDescription(tableName, description)
+		markdown += "\n"
 	}
 
 	if *flagOutfile == "" {
