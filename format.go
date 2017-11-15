@@ -108,3 +108,45 @@ func getFormatSpec(columns []columnDescription) formatSpec {
 func makeTitle(s string) string {
 	return "### " + s + "\n"
 }
+
+func formatDescription(
+	table string,
+	columns []columnDescription,
+) string {
+	tableMarkdown := makeTitle(table)
+
+	formatSpec := getFormatSpec(columns)
+	tableMarkdown = tableMarkdown + makeHeader(formatSpec)
+
+	for _, c := range columns {
+		tableMarkdown += c.Format(formatSpec)
+	}
+
+	tableMarkdown += "\n"
+
+	return tableMarkdown
+}
+
+func insertBetweenTags(
+	file string,
+	markdown string,
+) string {
+	startTag := "<!-- sql-gen-doc BEGIN -->"
+	endTag := "<!-- sql-gen-doc END -->"
+
+	// r := strings.NewReplacer(" ", "", "\t", "")
+	// stripped := r.Replace(file)
+
+	startIdx := strings.Index(file, startTag)
+	endIdx := strings.Index(file, endTag)
+	logger.Print(startIdx, endIdx)
+
+	if startIdx == -1 || endIdx == -1 {
+		logger.Printf("returning markdown")
+		return markdown
+	}
+
+	startIdx += len(startTag)
+	endIdx += len(endTag)
+	return file[:startIdx] + "\n" + markdown + "\n"
+}
