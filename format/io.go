@@ -1,7 +1,8 @@
-package main
+package format
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 
@@ -12,7 +13,7 @@ const (
 	defaultBufferSize = 65536
 )
 
-func createDatabaseConnection(
+func CreateDatabaseConnection(
 	ctx context.Context,
 	dsn string,
 ) (*sqlx.DB, error) {
@@ -27,7 +28,7 @@ func createDatabaseConnection(
 	return db, nil
 }
 
-func showTables(
+func ShowTables(
 	ctx context.Context,
 	db *sqlx.DB,
 ) ([]string, error) {
@@ -40,7 +41,7 @@ func showTables(
 	return result, nil
 }
 
-func describeTable(
+func DescribeTable(
 	ctx context.Context,
 	db *sqlx.DB,
 	tableName string,
@@ -55,16 +56,16 @@ func describeTable(
 }
 
 // TODO TEST
-func writeToFile(
+func WriteToFile(
 	filename string,
 	markdown string,
-) {
+) error {
 	file := ""
 	out, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR, 0666)
 	defer out.Close()
 
 	if err != nil {
-		logger.Fatalf("couldn't open %s for writing. reason: %s", *flagOutfile, err)
+		return fmt.Errorf("couldn't open %s for writing. reason: %s", filename, err)
 	}
 
 	n := defaultBufferSize
@@ -73,7 +74,7 @@ func writeToFile(
 
 		n, err = out.Read(buffer)
 		if err != nil && err != io.EOF {
-			logger.Fatalf("error while reading. reason: %s", err)
+			return fmt.Errorf("error while reading. reason: %s", err)
 		}
 
 		file += string(buffer)
@@ -85,7 +86,10 @@ func writeToFile(
 
 	// If the existing file is annotated with the requisite comments, we insert
 	// between them.
-	processedMarkdown := insertBetweenTags(file, markdown)
+	processedMarkdown, err := insertBetweenTags(file, markdown)
+	if err != nil {
+		return fmt.Errorf("couldn't insert markdown into file. reason: %s", err)
+	}
 
 	// Reset the fd before writing
 	out.Seek(0, 0)
@@ -93,10 +97,9 @@ func writeToFile(
 
 	remainingIdx := 0
 	for {
-		logger.Print("iterating")
 		written, err := out.WriteString(processedMarkdown[remainingIdx:])
 		if err != nil {
-			logger.Fatalf("error while writing. reason: %s", err)
+			return fmt.Errorf("error while writing. reason: %s", err)
 		}
 
 		if written == len(processedMarkdown) {
@@ -104,4 +107,6 @@ func writeToFile(
 		}
 		remainingIdx += written
 	}
+
+	return nil
 }

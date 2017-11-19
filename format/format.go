@@ -1,7 +1,8 @@
-package main
+package format
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 )
 
@@ -105,13 +106,11 @@ func getFormatSpec(columns []columnDescription) formatSpec {
 	return spec
 }
 
-// TODO TEST
 func makeTitle(s string) string {
 	return "### " + s + "\n"
 }
 
-// TODO TEST
-func formatDescription(
+func FormatTable(
 	table string,
 	columns []columnDescription,
 ) string {
@@ -127,27 +126,27 @@ func formatDescription(
 	return tableMarkdown
 }
 
-// TODO TEST
 func insertBetweenTags(
 	file string,
 	markdown string,
-) string {
+) (string, error) {
 	startTag := "<!-- sql-gen-doc BEGIN -->"
 	endTag := "<!-- sql-gen-doc END -->"
 
-	// r := strings.NewReplacer(" ", "", "\t", "")
-	// stripped := r.Replace(file)
-
 	startIdx := strings.Index(file, startTag)
 	endIdx := strings.Index(file, endTag)
-	logger.Print(startIdx, endIdx)
 
-	if startIdx == -1 || endIdx == -1 {
-		logger.Printf("returning markdown")
-		return markdown
+	if startIdx == -1 && endIdx != -1 {
+		return "", fmt.Errorf("missing start tag <!-- sql-gen-doc BEGIN -->")
+	} else if startIdx != -1 && endIdx == -1 {
+		return "", fmt.Errorf("missing end tag <!-- sql-gen-doc END -->")
+	} else if startIdx == -1 && endIdx == -1 {
+		return markdown, nil
+	} else if startIdx > endIdx {
+		return "", fmt.Errorf("tags out of order! <!-- sql-gen-doc BEGIN --> was after <!-- sql-gen-doc END -->")
 	}
 
+	// all is well, insert between the tags!
 	startIdx += len(startTag)
-	endIdx += len(endTag)
-	return file[:startIdx] + "\n" + markdown + "\n"
+	return file[:startIdx] + "\n" + markdown + "\n" + file[endIdx:], nil
 }
