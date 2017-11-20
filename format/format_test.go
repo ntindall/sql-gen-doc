@@ -76,17 +76,17 @@ func TestColumnDescriptionFormat(t *testing.T) {
 
 	testcases := []struct {
 		desc        string
-		cd          columnDescription
+		cd          ColumnDescription
 		expectation string
 	}{
 		{
 			desc:        "pads all fields to specified length (works with empty strings)",
-			cd:          columnDescription{},
+			cd:          ColumnDescription{},
 			expectation: "|       |      |      |     | NULL    |       |\n",
 		},
 		{
 			desc: "pads all fields to specified length",
-			cd: columnDescription{
+			cd: ColumnDescription{
 				Field: "Field", // same length
 				Extra: "s",     //shorter
 			},
@@ -94,7 +94,7 @@ func TestColumnDescriptionFormat(t *testing.T) {
 		},
 		{
 			desc: "writes values to the mark down",
-			cd: columnDescription{
+			cd: ColumnDescription{
 				Field:   "b", // same length
 				Type:    "a",
 				Null:    "n",
@@ -108,7 +108,7 @@ func TestColumnDescriptionFormat(t *testing.T) {
 
 	for i, tc := range testcases {
 		t.Logf("test case %d: %s", i, tc.desc)
-		actual := tc.cd.Format(testingFormatSpec)
+		actual := tc.cd.format(testingFormatSpec)
 		assert.Equal(t, tc.expectation, actual)
 	}
 }
@@ -116,17 +116,17 @@ func TestColumnDescriptionFormat(t *testing.T) {
 func TestGetFormatSpec(t *testing.T) {
 	testcases := []struct {
 		desc        string
-		cds         []columnDescription
+		cds         []ColumnDescription
 		expectation formatSpec
 	}{
 		{
 			desc:        "returns default for empty cds",
-			cds:         []columnDescription{},
+			cds:         []ColumnDescription{},
 			expectation: defaultFormatSpec,
 		},
 		{
 			desc: "returns default if all entries have field less than default",
-			cds: []columnDescription{
+			cds: []ColumnDescription{
 				{
 					Field:   "aa",
 					Type:    "aa",
@@ -148,7 +148,7 @@ func TestGetFormatSpec(t *testing.T) {
 		},
 		{
 			desc: "returns longest value for each field name",
-			cds: []columnDescription{
+			cds: []ColumnDescription{
 				{
 					Field: "the longest field name", // 22
 				},
@@ -191,13 +191,13 @@ func TestCreateTableMarkdown(t *testing.T) {
 	testcases := []struct {
 		desc        string
 		tablename   string
-		cds         []columnDescription
+		cds         []ColumnDescription
 		expectation string
 	}{
 		{
 			desc:      "works with just one column",
 			tablename: "simple_table",
-			cds: []columnDescription{
+			cds: []ColumnDescription{
 				{
 					Field: "id",
 					Type:  "bigint(20) unsigned",
@@ -215,7 +215,7 @@ func TestCreateTableMarkdown(t *testing.T) {
 		{
 			desc:      "works with more complicated table",
 			tablename: "complex_table",
-			cds: []columnDescription{
+			cds: []ColumnDescription{
 				{
 					Field: "id",
 					Type:  "bigint(20) unsigned",
