@@ -187,7 +187,7 @@ func TestGetFormatSpec(t *testing.T) {
 }
 
 // table abstraction -> markdown conversion
-func TestFormatTable(t *testing.T) {
+func TestCreateTableMarkdown(t *testing.T) {
 	testcases := []struct {
 		desc        string
 		tablename   string
@@ -254,7 +254,7 @@ func TestFormatTable(t *testing.T) {
 
 	for i, tc := range testcases {
 		t.Logf("test case %d: %s", i, tc.desc)
-		actual := FormatTable(tc.tablename, tc.cds)
+		actual := CreateTableMarkdown(tc.tablename, tc.cds)
 		assert.Equal(t, tc.expectation, actual)
 	}
 }

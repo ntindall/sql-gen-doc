@@ -1,49 +1,15 @@
 package format
 
 import (
-	"database/sql"
 	"fmt"
 	"strings"
 )
-
-type columnDescription struct {
-	Field   string         `db:"Field"`
-	Type    string         `db:"Type"`
-	Null    string         `db:"Null"`
-	Key     string         `db:"Key"`
-	Default sql.NullString `db:"Default"`
-	Extra   string         `db:"Extra"`
-}
-
-type formatSpec struct {
-	fieldLen   int
-	typeLen    int
-	nullLen    int
-	keyLen     int
-	defaultLen int
-	extraLen   int
-}
 
 func padRemainingWidth(
 	s string,
 	width int,
 ) string {
 	return strings.Repeat(" ", width-len(s))
-}
-
-func (c columnDescription) Format(f formatSpec) string {
-	defaultStr := "NULL"
-	if c.Default.Valid {
-		defaultStr = c.Default.String
-	}
-
-	return "| " + c.Field + padRemainingWidth(c.Field, f.fieldLen) +
-		" | " + c.Type + padRemainingWidth(c.Type, f.typeLen) +
-		" | " + c.Null + padRemainingWidth(c.Null, f.nullLen) +
-		" | " + c.Key + padRemainingWidth(c.Key, f.keyLen) +
-		" | " + defaultStr + padRemainingWidth(defaultStr, f.defaultLen) +
-		" | " + c.Extra + padRemainingWidth(c.Extra, f.extraLen) +
-		" |\n"
 }
 
 func makeHeader(f formatSpec) string {
@@ -67,7 +33,7 @@ func makeHeader(f formatSpec) string {
 		"\n"
 }
 
-func getFormatSpec(columns []columnDescription) formatSpec {
+func getFormatSpec(columns []ColumnDescription) formatSpec {
 	spec := formatSpec{
 		fieldLen:   len("Field"),
 		typeLen:    len("Type"),
@@ -110,9 +76,12 @@ func makeTitle(s string) string {
 	return "### " + s + "\n"
 }
 
-func FormatTable(
+// CreateTableMarkdown takes the name of a table in a database and a list of
+// ColumnDescription and returns a formatted markdown table with the
+// corresponding data.
+func CreateTableMarkdown(
 	table string,
-	columns []columnDescription,
+	columns []ColumnDescription,
 ) string {
 	tableMarkdown := makeTitle(table)
 
@@ -120,7 +89,7 @@ func FormatTable(
 	tableMarkdown = tableMarkdown + makeHeader(formatSpec)
 
 	for _, c := range columns {
-		tableMarkdown += c.Format(formatSpec)
+		tableMarkdown += c.format(formatSpec)
 	}
 
 	return tableMarkdown
