@@ -52,7 +52,7 @@ func main() {
 			logger.Fatalf("couldn't query database to describe table %s. reason: %s", tableName, err)
 		}
 
-		markdown += format.FormatTable(tableName, columns)
+		markdown += format.CreateTableMarkdown(tableName, columns)
 		markdown += "\n"
 	}
 

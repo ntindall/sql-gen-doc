@@ -13,6 +13,8 @@ const (
 	defaultBufferSize = 65536
 )
 
+// CreateDatabaseConnection creates a connection to the database. The connection
+// is long lived and should only be created once per process.
 func CreateDatabaseConnection(
 	ctx context.Context,
 	dsn string,
@@ -28,6 +30,8 @@ func CreateDatabaseConnection(
 	return db, nil
 }
 
+// ShowTables queries the database and returns a list of the tables that
+// are present in the database.
 func ShowTables(
 	ctx context.Context,
 	db *sqlx.DB,
@@ -41,12 +45,14 @@ func ShowTables(
 	return result, nil
 }
 
+// DescribeTable queries the database for information about the specified
+// table. The result is scanned into a ColumnDescription struct.
 func DescribeTable(
 	ctx context.Context,
 	db *sqlx.DB,
 	tableName string,
-) ([]columnDescription, error) {
-	result := []columnDescription{}
+) ([]ColumnDescription, error) {
+	result := []ColumnDescription{}
 
 	if err := db.SelectContext(ctx, &result, "DESCRIBE "+tableName); err != nil {
 		return nil, err
@@ -55,7 +61,17 @@ func DescribeTable(
 	return result, nil
 }
 
-// TODO TEST
+// WriteToFile takes a filename and a markdown string and writes the markdown
+// to the file. If the file is annotated with markdown comments, the markdown
+// will be inserted in between the comments. e.g.
+//
+// # fake markdown
+//
+// <!-- sql-gen-doc BEGIN -->
+// markdown will go here!
+// <!-- sql-gen-doc END -->"
+//
+// An error is returned if the file cannot be written.
 func WriteToFile(
 	filename string,
 	markdown string,
