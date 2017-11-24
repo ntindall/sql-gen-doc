@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-set -euox pipefail
+set -euo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # shellcheck source=/dev/null
 source "$DIR"/logs.sh
 
-dep=$(which dep)
+dep=$(which dep || true)
 if [ ! -z "$dep" ]; then
   log "dep is already installed at: $dep (nothing to do)."
   exit 0
