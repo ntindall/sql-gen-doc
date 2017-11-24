@@ -8,10 +8,16 @@ A tool to automatically generate sql documentation.
   go get -u github.com/ntindall/sql-gen-doc
 ```
 
-Not yet ready for production use :)
-
 ## Example use case
 
 ```sh
 ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate'
+```
+
+## Development
+
+```sh
+  git clone git@github.com:ntindall/sql-gen-doc.git $GOPATH/src/github.com/ntindall/sql-gen-doc
+  cd $GOPATH/src/github.com/ntindall/sql-gen-doc
+  make setup
 ```
