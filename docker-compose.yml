@@ -21,6 +21,12 @@ services:
       context: ./
     links:
       - mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+    volumes:
+      - ./logs:/go/src/github.com/ntindall/sql-gen-doc/logs
     depends_on:
       mysql:
         condition: service_healthy

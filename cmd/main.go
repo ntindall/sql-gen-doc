@@ -46,14 +46,16 @@ func main() {
 	}
 
 	markdown := ""
-	for _, tableName := range tables {
+	for idx, tableName := range tables {
 		columns, err := format.DescribeTable(ctx, db, tableName)
 		if err != nil {
 			logger.Fatalf("couldn't query database to describe table %s. reason: %s", tableName, err)
 		}
 
 		markdown += format.CreateTableMarkdown(tableName, columns)
-		markdown += "\n"
+		if idx != len(tables)-1 {
+			markdown += "\n"
+		}
 	}
 
 	if *flagOutfile == "" {
