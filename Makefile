@@ -76,3 +76,8 @@ go-test:
 go-lint: bin/golint
 	@echo "$(MAGENTA)linting $(GO_SRC_PACKAGES)$(RESET)"
 	@bin/golint -set_exit_status $(GO_SRC_PACKAGES)
+
+# releasing
+.PHONY: release
+release:
+	./scripts/release.sh
