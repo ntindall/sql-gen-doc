@@ -32,5 +32,5 @@ jobs:
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
       - run:
-          name: Run the tests in the docker container service
+          name: Run the tests
           command: make docker-test

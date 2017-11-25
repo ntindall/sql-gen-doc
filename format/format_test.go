@@ -54,7 +54,7 @@ func TestPadRemainingWidth(t *testing.T) {
 			defer func() {
 				if p := recover(); p != nil {
 					require.True(t, tc.shouldPanic, fmt.Sprintf("unexpected recovered from panic: %v", p))
-					assert.Equal(t, p, "strings: negative Repeat count")
+					assert.Equal(t, p, "strings: negatve Repeat count")
 				}
 			}()
 
