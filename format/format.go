@@ -19,6 +19,8 @@ func makeHeader(f formatSpec) string {
 	}
 
 	dashes := "|" + strings.Join([]string{
+		// we add two for each backtick present around the column name, plus an
+		// additional two for the spacing on either side.
 		strings.Repeat("-", f.FieldLen+4),
 		strings.Repeat("-", f.TypeLen+4),
 		strings.Repeat("-", f.NullLen+4),
