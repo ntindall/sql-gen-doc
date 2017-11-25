@@ -13,14 +13,6 @@ func padRemainingWidth(
 }
 
 func makeHeader(f formatSpec) string {
-	numberOfDashes :=
-		f.defaultLen + 2 + // padding for the surrounding spaces
-			f.extraLen + 2 +
-			f.fieldLen + 2 +
-			f.keyLen + 2 +
-			f.nullLen + 2 +
-			f.typeLen + 2 +
-			5 // one for each interior column separator
 
 	return "| Field" + padRemainingWidth("Field", f.fieldLen) +
 		" | Type" + padRemainingWidth("Type", f.typeLen) +
@@ -29,7 +21,14 @@ func makeHeader(f formatSpec) string {
 		" | Default" + padRemainingWidth("Default", f.defaultLen) +
 		" | Extra" + padRemainingWidth("Extra", f.extraLen) +
 		" |\n" +
-		"|" + strings.Repeat("-", numberOfDashes) + "|" +
+		"|" + strings.Join([]string{
+		strings.Repeat("-", f.fieldLen+2),
+		strings.Repeat("-", f.typeLen+2),
+		strings.Repeat("-", f.nullLen+2),
+		strings.Repeat("-", f.keyLen+2),
+		strings.Repeat("-", f.defaultLen+2),
+		strings.Repeat("-", f.extraLen+2),
+	}, "|") + "|" +
 		"\n"
 }
 
