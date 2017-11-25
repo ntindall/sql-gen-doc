@@ -11,6 +11,8 @@ function finish {
 }
 trap finish EXIT
 
+log "sleeping... docker-compose does not respect health checks"
+sleep 10
 #ensure the db exists
 mysql -h mysql -uroot -ppassword -e "CREATE DATABASE IF NOT EXISTS example; GRANT ALL PRIVILEGES ON example.* TO user IDENTIFIED BY 'password'"
 
