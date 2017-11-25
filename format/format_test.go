@@ -71,55 +71,6 @@ func TestPadRemainingWidth(t *testing.T) {
 	}
 }
 
-func TestColumnDescriptionFormat(t *testing.T) {
-	testingFormatSpec := formatSpec{
-		FieldLen:   len("Field"),
-		TypeLen:    len("Type"),
-		NullLen:    len("Null"),
-		KeyLen:     len("Key"),
-		DefaultLen: len("Default"),
-		ExtraLen:   len("Extra"),
-	}
-
-	testcases := []struct {
-		desc        string
-		cd          ColumnDescription
-		expectation string
-	}{
-		{
-			desc:        "pads all fields to specified length (works with empty strings, writes NULL for Default)",
-			cd:          ColumnDescription{},
-			expectation: "|         |        |        |       | `NULL`    |         |\n",
-		},
-		{
-			desc: "pads all fields to specified length",
-			cd: ColumnDescription{
-				Field: "Field", // same length
-				Extra: "s",     //shorter
-			},
-			expectation: "| `Field` |        |        |       | `NULL`    | `s`     |\n",
-		},
-		{
-			desc: "writes values to the mark down",
-			cd: ColumnDescription{
-				Field:   "b", // same length
-				Type:    "a",
-				Null:    "n",
-				Key:     "a",
-				Default: sql.NullString{String: "n", Valid: true},
-				Extra:   "a",
-			},
-			expectation: "| `b`     | `a`    | `n`    | `a`   | `n`       | `a`     |\n",
-		},
-	}
-
-	for i, tc := range testcases {
-		t.Logf("test case %d: %s", i, tc.desc)
-		actual := tc.cd.format(testingFormatSpec)
-		assert.Equal(t, tc.expectation, actual)
-	}
-}
-
 func TestGetFormatSpec(t *testing.T) {
 	testcases := []struct {
 		desc        string
