@@ -38,6 +38,21 @@ bin/sql-gen-doc: $(GO_SRC_FILES)
 	@echo "$(MAGENTA)building $(@)...$(RESET)"
 	go build -o bin/sql-gen-doc ./cmd
 
+# images
+.PHONY: images
+VERSION = 0.0.1
+images: .circleci/images/primary/Dockerfile
+	# TODO: is there a way to get the last tag following semver?
+	@echo "$(MAGENTA)current version is $(VERSION), did you bump this value?\n\
+press (enter to continue)?$(RESET)"
+	@read
+	@echo "$(MAGENTA)building a new base image with tag $(VERSION)...$(RESET)"
+	docker build -t pumpkinobsessed/sql-gen-doc:$(VERSION) $(^:%/Dockerfile=%)
+	docker login
+	docker tag pumpkinobsessed/sql-gen-doc:$(VERSION) pumpkinobsessed/sql-gen-doc:latest
+	docker push pumpkinobsessed/sql-gen-doc:$(VERSION)
+	docker push pumpkinobsessed/sql-gen-doc:latest
+
 # testing / linting
 
 .PHONY: docker-test
