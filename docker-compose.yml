@@ -1,0 +1,26 @@
+version: '2.1'
+services:
+  mysql:
+    image: circleci/mysql:5.6
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+    volumes:
+      - /var/lib/mysql
+      - ./logs:/logs
+    healthcheck:
+      test: mysql -u root -ppassword -e "show databases;"
+      interval: 15s
+      timeout: 5s
+      retries: 30
+    command: mysqld --general-log --general-log-file=/logs/mysql.log --log-error --log-error=/logs/mysql.error.log
+
+  test_container:
+    build:
+      context: ./
+    links:
+      - mysql
+    depends_on:
+      mysql:
+        condition: service_healthy

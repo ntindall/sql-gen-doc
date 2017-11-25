@@ -6,7 +6,7 @@ jobs:
   build:
     docker:
       # specify the version
-      - image: circleci/golang:1.8
+      - image: pumpkinobsessed/sql-gen-doc:0.0.1
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -20,8 +20,8 @@ jobs:
     working_directory: /go/src/github.com/ntindall/sql-gen-doc
     steps:
       - checkout
+      - setup_remote_docker
 
-      # specify any bash command here prefixed with `run: `
-      - run: go get -v -t -d ./...
-      - run: go get -u github.com/golang/lint/golint
-      - run: make test
+      - run:
+          name: Run the tests
+          command: make docker-test
