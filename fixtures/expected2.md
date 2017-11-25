@@ -3,7 +3,7 @@
 <!-- sql-gen-doc BEGIN -->
 ### all_data_types
 | Field     | Type                | Null | Key | Default              | Extra                          |
-|------------------------------------------------------------------------------------------------------|
+|-----------|---------------------|------|-----|----------------------|--------------------------------|
 | char_     | char(12)            | NO   | PRI | NULL                 |                                |
 | varchar_  | varchar(120)        | YES  |     | NULL                 |                                |
 | boolean_  | tinyint(1)          | YES  |     | NULL                 |                                |
@@ -25,7 +25,7 @@
 
 ### goose_db_version
 | Field      | Type                | Null | Key | Default           | Extra          |
-|------------------------------------------------------------------------------------|
+|------------|---------------------|------|-----|-------------------|----------------|
 | id         | bigint(20) unsigned | NO   | PRI | NULL              | auto_increment |
 | version_id | bigint(20)          | NO   |     | NULL              |                |
 | is_applied | tinyint(1)          | NO   |     | NULL              |                |
@@ -33,7 +33,7 @@
 
 ### persons
 | Field      | Type         | Null | Key | Default | Extra |
-|----------------------------------------------------------|
+|------------|--------------|------|-----|---------|-------|
 | person_id  | int(11)      | YES  |     | NULL    |       |
 | last_name  | varchar(255) | YES  |     | NULL    |       |
 | first_name | varchar(255) | YES  |     | NULL    |       |
@@ -42,7 +42,7 @@
 
 ### random_times
 | Field     | Type                | Null | Key | Default              | Extra          |
-|--------------------------------------------------------------------------------------|
+|-----------|---------------------|------|-----|----------------------|----------------|
 | id        | bigint(20) unsigned | NO   | PRI | NULL                 | auto_increment |
 | created   | timestamp(6)        | NO   |     | CURRENT_TIMESTAMP(6) |                |
 | timestamp | datetime(6)         | NO   |     | NULL                 |                |
