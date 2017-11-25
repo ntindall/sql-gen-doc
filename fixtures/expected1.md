@@ -1,5 +1,5 @@
 ### all_data_types
-| `Field`     | `Type`                | `Null` | `Key` | `Default`              | `Extra`                          |
+| Field       | Type                  | Null   | Key   | Default                | Extra                            |
 |-------------|-----------------------|--------|-------|------------------------|----------------------------------|
 | `char_`     | `char(12)`            | `NO`   | `PRI` | `NULL`                 |                                  |
 | `varchar_`  | `varchar(120)`        | `YES`  |       | `NULL`                 |                                  |
@@ -21,7 +21,7 @@
 | `longblog_` | `longblob`            | `YES`  |       | `NULL`                 |                                  |
 
 ### goose_db_version
-| `Field`      | `Type`                | `Null` | `Key` | `Default`           | `Extra`          |
+| Field        | Type                  | Null   | Key   | Default             | Extra            |
 |--------------|-----------------------|--------|-------|---------------------|------------------|
 | `id`         | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`              | `auto_increment` |
 | `version_id` | `bigint(20)`          | `NO`   |       | `NULL`              |                  |
@@ -29,7 +29,7 @@
 | `tstamp`     | `timestamp`           | `YES`  |       | `CURRENT_TIMESTAMP` |                  |
 
 ### persons
-| `Field`      | `Type`         | `Null` | `Key` | `Default` | `Extra` |
+| Field        | Type           | Null   | Key   | Default   | Extra   |
 |--------------|----------------|--------|-------|-----------|---------|
 | `person_id`  | `int(11)`      | `YES`  |       | `NULL`    |         |
 | `last_name`  | `varchar(255)` | `YES`  |       | `NULL`    |         |
@@ -38,7 +38,7 @@
 | `city`       | `varchar(255)` | `YES`  |       | `NULL`    |         |
 
 ### random_times
-| `Field`     | `Type`                | `Null` | `Key` | `Default`              | `Extra`          |
+| Field       | Type                  | Null   | Key   | Default                | Extra            |
 |-------------|-----------------------|--------|-------|------------------------|------------------|
 | `id`        | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`                 | `auto_increment` |
 | `created`   | `timestamp(6)`        | `NO`   |       | `CURRENT_TIMESTAMP(6)` |                  |

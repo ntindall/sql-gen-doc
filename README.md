@@ -8,11 +8,40 @@ A tool to automatically generate sql documentation.
   go get -u github.com/ntindall/sql-gen-doc
 ```
 
-## Example use case
+`sql-gen-doc` will connect to a database and generate a markdown table
+corresponding to the current state of each table in the database. This is useful
+for databases that undergo frequent migrations. You can set up your CI to run
+this tool whenever a new migration is added.
 
 ```sh
-./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate'
+$ ./bin/sql-gen-doc --help
+Usage of ./bin/sql-gen-doc:
+  -dsn string
+      a data source name for the database, e.g. user:password@tcp(mysql:3306)/database_name
+  -o string
+      the outfile to write the documentation to, if no outfile is specified, the output is written to stdout
+
+$ ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate -out outfile.md'
 ```
+
+Additionally, the markdown file can be annotated with comments in order to have
+`sql-gen-doc` insert the table into a specific location in an existing file. For this
+to work, just add these comments to your markdown file and then specify it as the
+outfile via the command line flag.
+
+```markdown
+# fake markdown
+
+<!-- sql-gen-doc BEGIN -->
+database documentation will go here!
+<!-- sql-gen-doc END -->
+
+more documentation!
+```
+
+## Output
+
+See [fixtures/expected1.md](fixtures/expected1.md) and [fixtures/expected2.md](fixtures/expected12.md) for examples.
 
 ## Development
 

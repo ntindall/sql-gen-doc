@@ -1,22 +1,21 @@
 package format
 
 import (
-	"database/sql"
 	"fmt"
 	"strings"
 )
 
 func makeHeader(f formatSpec) string {
-
-	// the header can be formatted in the same way as the column descriptions
-	header := ColumnDescription{
-		Field:   "Field",
-		Type:    "Type",
-		Null:    "Null",
-		Key:     "Key",
-		Default: sql.NullString{"Default", true},
-		Extra:   "Extra",
-	}
+	// TODO: a better abstraction for styling column description fields.
+	// we add two to the expected length to accomodate the missing backticks.
+	header := "| " + strings.Join([]string{
+		"Field" + padRemainingWidth("Field", f.FieldLen+2),
+		"Type" + padRemainingWidth("Type", f.TypeLen+2),
+		"Null" + padRemainingWidth("Null", f.NullLen+2),
+		"Key" + padRemainingWidth("Key", f.KeyLen+2),
+		"Default" + padRemainingWidth("Default", f.DefaultLen+2),
+		"Extra" + padRemainingWidth("Extra", f.ExtraLen+2),
+	}, " | ") + " |\n"
 
 	dashes := "|" + strings.Join([]string{
 		// we add two for each backtick present around the column name, plus an
@@ -29,7 +28,7 @@ func makeHeader(f formatSpec) string {
 		strings.Repeat("-", f.ExtraLen+4),
 	}, "|") + "|" + "\n"
 
-	return header.format(f) + dashes
+	return header + dashes
 }
 
 func getFormatSpec(columns []ColumnDescription) formatSpec {

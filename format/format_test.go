@@ -215,7 +215,7 @@ func TestCreateTableMarkdown(t *testing.T) {
 				},
 			},
 			expectation: "### simple_table\n" +
-				"| `Field` | `Type`                | `Null` | `Key` | `Default` | `Extra`       |\n" +
+				"| Field   | Type                  | Null   | Key   | Default   | Extra         |\n" +
 				"|---------|-----------------------|--------|-------|-----------|---------------|\n" +
 				"| `id`    | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`    | `PRIMARY KEY` |\n",
 		},
@@ -249,7 +249,7 @@ func TestCreateTableMarkdown(t *testing.T) {
 				},
 			},
 			expectation: "### complex_table\n" +
-				"| `Field`          | `Type`                | `Null` | `Key` | `Default`              | `Extra`       |\n" +
+				"| Field            | Type                  | Null   | Key   | Default                | Extra         |\n" +
 				"|------------------|-----------------------|--------|-------|------------------------|---------------|\n" +
 				"| `id`             | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`                 | `PRIMARY KEY` |\n" +
 				"| `created`        | `timestamp(6)`        | `NO`   |       | `CURRENT_TIMESTAMP(6)` |               |\n" +
