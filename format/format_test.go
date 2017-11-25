@@ -87,7 +87,7 @@ func TestColumnDescriptionFormat(t *testing.T) {
 		expectation string
 	}{
 		{
-			desc:        "pads all fields to specified length (works with empty strings)",
+			desc:        "pads all fields to specified length (works with empty strings, writes NULL for Default)",
 			cd:          ColumnDescription{},
 			expectation: "|         |        |        |       | `NULL`    |         |\n",
 		},
@@ -176,7 +176,6 @@ func TestGetFormatSpec(t *testing.T) {
 				},
 			},
 			expectation: formatSpec{
-				// we add two to the length of the string to accomodate the backtick.
 				FieldLen:   22,
 				TypeLen:    20,
 				NullLen:    18,
@@ -331,5 +330,41 @@ markdown
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectation, actual)
 		}
+	}
+}
+
+func TestMakeHeader(t *testing.T) {
+	testcases := []struct {
+		desc        string
+		f           formatSpec
+		expectation string
+	}{
+		{
+			desc: "works with default format spec",
+			f:    defaultFormatSpec,
+			expectation: "" +
+				"| Field   | Type   | Null   | Key   | Default   | Extra   |\n" +
+				"|---------|--------|--------|-------|-----------|---------|\n",
+		},
+		{
+			desc: "pads column names and dashes to correct length",
+			f: formatSpec{
+				FieldLen:   10,
+				TypeLen:    10,
+				NullLen:    20,
+				KeyLen:     10,
+				DefaultLen: 10,
+				ExtraLen:   15,
+			},
+			expectation: "" +
+				"| Field        | Type         | Null                   | Key          | Default      | Extra             |\n" +
+				"|--------------|--------------|------------------------|--------------|--------------|-------------------|\n",
+		},
+	}
+
+	for i, tc := range testcases {
+		t.Logf("test case %d: %s", i, tc.desc)
+		actual := makeHeader(tc.f)
+		assert.Equal(t, tc.expectation, actual)
 	}
 }
