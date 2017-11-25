@@ -1,6 +1,8 @@
 GO_SRC_FILES = $(shell find . -type f -name '*.go' | sed /vendor/d )
 GO_SRC_PACKAGES =$(shell go list ./... | sed /vendor/d )
 GOLINT_SRC = ./vendor/github.com/golang/lint/golint
+GOOSE_SRC = ./vendor/github.com/pressly/goose/cmd/goose
+
 # vanity
 GREEN = \033[0;32m
 MAGENTA = \033[0;35m
@@ -8,7 +10,7 @@ RESET = \033[0;0m
 
 # setup
 .PHONY: setup
-setup: install-dep vendor bin/golint
+setup: install-dep vendor bin/golint bin/goose
 
 .PHONY: clean
 clean:
@@ -31,7 +33,11 @@ vendor: Gopkg.toml Gopkg.lock
 
 bin/golint: vendor
 	@echo "$(MAGENTA)building $(@)...$(RESET)"
-	@go build -o $(@) ./vendor/github.com/golang/lint/golint
+	@go build -o $(@) $(GOLINT_SRC)
+
+bin/goose: vendor
+	@echo "$(MAGENTA)building $(@)...$(RESET)"
+	@go build -o $(@) $(GOOSE_SRC)
 
 # build
 
@@ -62,10 +68,14 @@ press (enter to continue)?$(RESET)"
 .PHONY: docker-test
 docker-test:
 	@docker-compose -f docker-compose.yml build test_container
-	@docker-compose -f docker-compose.yml run test_container make test
+	@docker-compose -f docker-compose.yml run test_container make test integrate
+
+.PHONY: integrate
+integrate:
+	./scripts/integrate.sh
 
 .PHONY: test
-test: clean go-test go-lint build
+test: go-test go-lint build
 
 .PHONY: go-test
 go-test:
@@ -81,3 +91,8 @@ go-lint: bin/golint
 .PHONY: release
 release:
 	./scripts/release.sh
+
+# migrations
+.PHONY: migrate-up migrate-down migrate-reset
+migrate-up migrate-down migrate-reset:
+	@./bin/goose -dir goose mysql "$(MYSQL_USER):$(MYSQL_PASSWORD)@(mysql:3306)/example" $(@:migrate-%=%)

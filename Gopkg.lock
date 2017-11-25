@@ -26,16 +26,46 @@
   revision = "3379e5993990b1f927fc8db926485e6f6becf2d2"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/lib/pq"
+  packages = [".","oid"]
+  revision = "8c6ee72f3e6bcb1542298dd5f76cb74af9742cec"
+
+[[projects]]
+  name = "github.com/mattn/go-sqlite3"
+  packages = ["."]
+  revision = "ed69081a91fd053f17672236b0dd52ba7485e1a3"
+  version = "v1.4.0"
+
+[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/pressly/goose"
+  packages = ["."]
+  revision = "056a4d47dcc4d67fa3947a4f13945a5c690e568b"
+  version = "v2.1.0"
+
+[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert","require"]
   revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
   version = "v1.1.4"
+
+[[projects]]
+  name = "github.com/ziutek/mymysql"
+  packages = ["godrv","mysql","native"]
+  revision = "e08c2f35356576b3c3690c252fe5dca728ae9292"
+  version = "v1.5.4"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["context"]
+  revision = "c7086645de248775cbf2373cf5ca4d2fa664b8c1"
 
 [[projects]]
   branch = "master"
@@ -46,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7725a754473fd10984f065d43ac5ee8bba6628815f516b7169e0d174d7ee579d"
+  inputs-digest = "7b4ec3bcc60c0b4be4df2a9b5da2695ab3fc4c39415caed2e182f2998f759a0c"
   solver-name = "gps-cdcl"
   solver-version = 1

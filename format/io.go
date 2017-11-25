@@ -3,7 +3,7 @@ package format
 import (
 	"context"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"os"
 
 	"github.com/jmoiron/sqlx"
@@ -76,53 +76,17 @@ func WriteToFile(
 	filename string,
 	markdown string,
 ) error {
-	file := ""
-	out, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR, 0666)
-	defer out.Close()
-
-	if err != nil {
-		return fmt.Errorf("couldn't open %s for writing. reason: %s", filename, err)
-	}
-
-	n := defaultBufferSize
-	for {
-		buffer := make([]byte, n)
-
-		n, err = out.Read(buffer)
-		if err != nil && err != io.EOF {
-			return fmt.Errorf("error while reading. reason: %s", err)
-		}
-
-		file += string(buffer)
-
-		if n == 0 || err == io.EOF {
-			break
-		}
+	file, err := ioutil.ReadFile(filename)
+	if err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("couldn't open %s for reading. reason: %s", filename, err)
 	}
 
 	// If the existing file is annotated with the requisite comments, we insert
 	// between them.
-	processedMarkdown, err := insertBetweenTags(file, markdown)
+	processedMarkdown, err := insertBetweenTags(string(file), markdown)
 	if err != nil {
 		return fmt.Errorf("couldn't insert markdown into file. reason: %s", err)
 	}
 
-	// Reset the fd before writing
-	out.Seek(0, 0)
-	out.Truncate(int64(len(processedMarkdown)))
-
-	remainingIdx := 0
-	for {
-		written, err := out.WriteString(processedMarkdown[remainingIdx:])
-		if err != nil {
-			return fmt.Errorf("error while writing. reason: %s", err)
-		}
-
-		if written == len(processedMarkdown) {
-			break
-		}
-		remainingIdx += written
-	}
-
-	return nil
+	return ioutil.WriteFile(filename, []byte(processedMarkdown), 0644)
 }
