@@ -12,7 +12,7 @@ setup: install-dep vendor bin/golint
 
 .PHONY: install-dep
 install-dep:
-	@scripts/install-dep.sh
+	@./scripts/install-dep.sh
 
 vendor: Gopkg.toml Gopkg.lock
 	@echo "$(GREEN)installing vendored dependencies...$(RESET)"
