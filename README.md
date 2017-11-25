@@ -8,6 +8,8 @@ A tool to automatically generate sql documentation.
   go get -u github.com/ntindall/sql-gen-doc
 ```
 
+## Usage
+
 `sql-gen-doc` will connect to a database and generate a markdown table
 corresponding to the current state of each table in the database. This is useful
 for databases that undergo frequent migrations. You can set up your CI to run
