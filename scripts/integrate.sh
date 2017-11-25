@@ -11,16 +11,20 @@ function finish {
 }
 trap finish EXIT
 
-log "sleeping... docker-compose does not respect health checks"
+# https://github.com/docker/compose/issues/4369
+log "sleeping... docker-compose run does not respect health checks"
 sleep 10
 #ensure the db exists
 mysql -h mysql -uroot -ppassword -e "CREATE DATABASE IF NOT EXISTS example; GRANT ALL PRIVILEGES ON example.* TO user IDENTIFIED BY 'password'"
 
+
 log "migrating database down to the beginning"
 make migrate-reset
+
 log "bringing database back up"
 make migrate-up
 
+# test case 1
 log "testing create a new file"
 ./bin/sql-gen-doc -dsn 'user:password@tcp(mysql:3306)/example' -o tmp/example.md
 cp tmp/example.md logs/out1.md
@@ -29,6 +33,7 @@ if [ "$(diff --text tmp/example.md fixtures/expected1.md |& tee logs/test1.diff)
   exit 1
 fi
 
+# test case 2
 log "testing inserting between markdown"
 cp fixtures/seed2.md tmp/example2.md
 ./bin/sql-gen-doc -dsn 'user:password@tcp(mysql:3306)/example' -o tmp/example2.md
@@ -38,4 +43,6 @@ if [ "$(diff --text tmp/example2.md fixtures/expected2.md |& tee logs/test2.diff
   log_error "output did not match fixture"
   exit 1
 fi
+
+log "OK"
 

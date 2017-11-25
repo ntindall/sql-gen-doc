@@ -3,6 +3,7 @@ package format
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,12 +12,12 @@ import (
 
 // Fixture used for testing the format spec logic.
 var defaultFormatSpec = formatSpec{
-	fieldLen:   len("Field"),
-	typeLen:    len("Type"),
-	nullLen:    len("Null"),
-	keyLen:     len("Key"),
-	defaultLen: len("Default"),
-	extraLen:   len("Extra"),
+	FieldLen:   len("Field"),
+	TypeLen:    len("Type"),
+	NullLen:    len("Null"),
+	KeyLen:     len("Key"),
+	DefaultLen: len("Default"),
+	ExtraLen:   len("Extra"),
 }
 
 func TestPadRemainingWidth(t *testing.T) {
@@ -45,6 +46,12 @@ func TestPadRemainingWidth(t *testing.T) {
 			inputWidth:  10,
 			shouldPanic: true,
 		},
+		{
+			desc:        "pads additional two characters if input is empty string",
+			inputString: "", // 0 characters
+			inputWidth:  10,
+			expectation: strings.Repeat(" ", 12),
+		},
 	}
 
 	for i, tc := range testcases {
@@ -61,55 +68,6 @@ func TestPadRemainingWidth(t *testing.T) {
 			actual := padRemainingWidth(tc.inputString, tc.inputWidth)
 			assert.Equal(t, tc.expectation, actual)
 		}()
-	}
-}
-
-func TestColumnDescriptionFormat(t *testing.T) {
-	testingFormatSpec := formatSpec{
-		fieldLen:   len("Field"),
-		typeLen:    len("Type"),
-		nullLen:    len("Null"),
-		keyLen:     len("Key"),
-		defaultLen: len("Default"),
-		extraLen:   len("Extra"),
-	}
-
-	testcases := []struct {
-		desc        string
-		cd          ColumnDescription
-		expectation string
-	}{
-		{
-			desc:        "pads all fields to specified length (works with empty strings)",
-			cd:          ColumnDescription{},
-			expectation: "|       |      |      |     | NULL    |       |\n",
-		},
-		{
-			desc: "pads all fields to specified length",
-			cd: ColumnDescription{
-				Field: "Field", // same length
-				Extra: "s",     //shorter
-			},
-			expectation: "| Field |      |      |     | NULL    | s     |\n",
-		},
-		{
-			desc: "writes values to the mark down",
-			cd: ColumnDescription{
-				Field:   "b", // same length
-				Type:    "a",
-				Null:    "n",
-				Key:     "a",
-				Default: sql.NullString{String: "n", Valid: true},
-				Extra:   "a",
-			},
-			expectation: "| b     | a    | n    | a   | n       | a     |\n",
-		},
-	}
-
-	for i, tc := range testcases {
-		t.Logf("test case %d: %s", i, tc.desc)
-		actual := tc.cd.format(testingFormatSpec)
-		assert.Equal(t, tc.expectation, actual)
 	}
 }
 
@@ -169,12 +127,12 @@ func TestGetFormatSpec(t *testing.T) {
 				},
 			},
 			expectation: formatSpec{
-				fieldLen:   22,
-				typeLen:    20,
-				nullLen:    18,
-				keyLen:     16,
-				defaultLen: 14,
-				extraLen:   12,
+				FieldLen:   22,
+				TypeLen:    20,
+				NullLen:    18,
+				KeyLen:     16,
+				DefaultLen: 14,
+				ExtraLen:   12,
 			},
 		},
 	}
@@ -206,11 +164,10 @@ func TestCreateTableMarkdown(t *testing.T) {
 					Extra: "PRIMARY KEY",
 				},
 			},
-			expectation: `### simple_table
-| Field | Type                | Null | Key | Default | Extra       |
-|-------|---------------------|------|-----|---------|-------------|
-| id    | bigint(20) unsigned | NO   | PRI | NULL    | PRIMARY KEY |
-`,
+			expectation: "### simple_table\n" +
+				"| Field   | Type                  | Null   | Key   | Default   | Extra         |\n" +
+				"|---------|-----------------------|--------|-------|-----------|---------------|\n" +
+				"| `id`    | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`    | `PRIMARY KEY` |\n",
 		},
 		{
 			desc:      "works with more complicated table",
@@ -241,14 +198,13 @@ func TestCreateTableMarkdown(t *testing.T) {
 					Null:  "YES",
 				},
 			},
-			expectation: `### complex_table
-| Field          | Type                | Null | Key | Default              | Extra       |
-|----------------|---------------------|------|-----|----------------------|-------------|
-| id             | bigint(20) unsigned | NO   | PRI | NULL                 | PRIMARY KEY |
-| created        | timestamp(6)        | NO   |     | CURRENT_TIMESTAMP(6) |             |
-| indexed_column | bigint(20) unsigned | NO   | MUL | NULL                 |             |
-| request_id     | varchar(255)        | YES  |     | NULL                 |             |
-`,
+			expectation: "### complex_table\n" +
+				"| Field            | Type                  | Null   | Key   | Default                | Extra         |\n" +
+				"|------------------|-----------------------|--------|-------|------------------------|---------------|\n" +
+				"| `id`             | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`                 | `PRIMARY KEY` |\n" +
+				"| `created`        | `timestamp(6)`        | `NO`   |       | `CURRENT_TIMESTAMP(6)` |               |\n" +
+				"| `indexed_column` | `bigint(20) unsigned` | `NO`   | `MUL` | `NULL`                 |               |\n" +
+				"| `request_id`     | `varchar(255)`        | `YES`  |       | `NULL`                 |               |\n",
 		},
 	}
 
@@ -325,5 +281,41 @@ markdown
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectation, actual)
 		}
+	}
+}
+
+func TestMakeHeader(t *testing.T) {
+	testcases := []struct {
+		desc        string
+		f           formatSpec
+		expectation string
+	}{
+		{
+			desc: "works with default format spec",
+			f:    defaultFormatSpec,
+			expectation: "" +
+				"| Field   | Type   | Null   | Key   | Default   | Extra   |\n" +
+				"|---------|--------|--------|-------|-----------|---------|\n",
+		},
+		{
+			desc: "pads column names and dashes to correct length",
+			f: formatSpec{
+				FieldLen:   10,
+				TypeLen:    10,
+				NullLen:    20,
+				KeyLen:     10,
+				DefaultLen: 10,
+				ExtraLen:   15,
+			},
+			expectation: "" +
+				"| Field        | Type         | Null                   | Key          | Default      | Extra             |\n" +
+				"|--------------|--------------|------------------------|--------------|--------------|-------------------|\n",
+		},
+	}
+
+	for i, tc := range testcases {
+		t.Logf("test case %d: %s", i, tc.desc)
+		actual := makeHeader(tc.f)
+		assert.Equal(t, tc.expectation, actual)
 	}
 }

@@ -1,7 +1,10 @@
 package format
 
 import (
+	"bytes"
 	"database/sql"
+	"html/template"
+	"strings"
 )
 
 // ColumnDescription contains all the data rendered about a sql column by the
@@ -16,25 +19,62 @@ type ColumnDescription struct {
 }
 
 type formatSpec struct {
-	fieldLen   int
-	typeLen    int
-	nullLen    int
-	keyLen     int
-	defaultLen int
-	extraLen   int
+	FieldLen   int
+	TypeLen    int
+	NullLen    int
+	KeyLen     int
+	DefaultLen int
+	ExtraLen   int
+}
+
+func monospaceIfNotEmpty(
+	key string,
+) string {
+	return "{{if " + key + "}}`{{" + key + "}}`{{end}}"
+}
+
+func padRemainingWidth(
+	s string,
+	width int,
+) string {
+	val := strings.Repeat(" ", width-len(s))
+
+	// When the string is empty, we pad an _additional_ two characters to
+	// accomodate the missing backticks
+	if s == "" {
+		return val + "  "
+	}
+
+	return val
 }
 
 func (c ColumnDescription) format(f formatSpec) string {
+	fieldTpl := monospaceIfNotEmpty(".Field")
+	typeTpl := monospaceIfNotEmpty(".Type")
+	nullTpl := monospaceIfNotEmpty(".Null")
+	keyTpl := monospaceIfNotEmpty(".Key")
+	defaultTpl := "{{if .Default.Valid}}`{{.Default.String}}`{{else}}`NULL`{{end}}"
+	extraTpl := monospaceIfNotEmpty(".Extra")
+
 	defaultStr := "NULL"
 	if c.Default.Valid {
 		defaultStr = c.Default.String
 	}
 
-	return "| " + c.Field + padRemainingWidth(c.Field, f.fieldLen) +
-		" | " + c.Type + padRemainingWidth(c.Type, f.typeLen) +
-		" | " + c.Null + padRemainingWidth(c.Null, f.nullLen) +
-		" | " + c.Key + padRemainingWidth(c.Key, f.keyLen) +
-		" | " + defaultStr + padRemainingWidth(defaultStr, f.defaultLen) +
-		" | " + c.Extra + padRemainingWidth(c.Extra, f.extraLen) +
+	tplString := "| " + fieldTpl + padRemainingWidth(c.Field, f.FieldLen) +
+		" | " + typeTpl + padRemainingWidth(c.Type, f.TypeLen) +
+		" | " + nullTpl + padRemainingWidth(c.Null, f.NullLen) +
+		" | " + keyTpl + padRemainingWidth(c.Key, f.KeyLen) +
+		" | " + defaultTpl + padRemainingWidth(defaultStr, f.DefaultLen) +
+		" | " + extraTpl + padRemainingWidth(c.Extra, f.ExtraLen) +
 		" |\n"
+
+	t := template.Must(template.New("column_description").Parse(tplString))
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, c); err != nil {
+		panic(err)
+	}
+
+	return tpl.String()
+
 }

@@ -5,66 +5,66 @@ import (
 	"strings"
 )
 
-func padRemainingWidth(
-	s string,
-	width int,
-) string {
-	return strings.Repeat(" ", width-len(s))
-}
-
 func makeHeader(f formatSpec) string {
+	// TODO: a better abstraction for styling column description fields.
+	// we add two to the expected length to accomodate the missing backticks.
+	header := "| " + strings.Join([]string{
+		"Field" + padRemainingWidth("Field", f.FieldLen+2),
+		"Type" + padRemainingWidth("Type", f.TypeLen+2),
+		"Null" + padRemainingWidth("Null", f.NullLen+2),
+		"Key" + padRemainingWidth("Key", f.KeyLen+2),
+		"Default" + padRemainingWidth("Default", f.DefaultLen+2),
+		"Extra" + padRemainingWidth("Extra", f.ExtraLen+2),
+	}, " | ") + " |\n"
 
-	return "| Field" + padRemainingWidth("Field", f.fieldLen) +
-		" | Type" + padRemainingWidth("Type", f.typeLen) +
-		" | Null" + padRemainingWidth("Null", f.nullLen) +
-		" | Key" + padRemainingWidth("Key", f.keyLen) +
-		" | Default" + padRemainingWidth("Default", f.defaultLen) +
-		" | Extra" + padRemainingWidth("Extra", f.extraLen) +
-		" |\n" +
-		"|" + strings.Join([]string{
-		strings.Repeat("-", f.fieldLen+2),
-		strings.Repeat("-", f.typeLen+2),
-		strings.Repeat("-", f.nullLen+2),
-		strings.Repeat("-", f.keyLen+2),
-		strings.Repeat("-", f.defaultLen+2),
-		strings.Repeat("-", f.extraLen+2),
-	}, "|") + "|" +
-		"\n"
+	dashes := "|" + strings.Join([]string{
+		// we add two for each backtick present around the column name, plus an
+		// additional two for the spacing on either side.
+		strings.Repeat("-", f.FieldLen+4),
+		strings.Repeat("-", f.TypeLen+4),
+		strings.Repeat("-", f.NullLen+4),
+		strings.Repeat("-", f.KeyLen+4),
+		strings.Repeat("-", f.DefaultLen+4),
+		strings.Repeat("-", f.ExtraLen+4),
+	}, "|") + "|" + "\n"
+
+	return header + dashes
 }
 
 func getFormatSpec(columns []ColumnDescription) formatSpec {
 	spec := formatSpec{
-		fieldLen:   len("Field"),
-		typeLen:    len("Type"),
-		nullLen:    len("Null"),
-		keyLen:     len("Key"),
-		defaultLen: len("Default"),
-		extraLen:   len("Extra"),
+		FieldLen:   len("Field"),
+		TypeLen:    len("Type"),
+		NullLen:    len("Null"),
+		KeyLen:     len("Key"),
+		DefaultLen: len("Default"),
+		ExtraLen:   len("Extra"),
 	}
 
+	// Iterate over each column
 	for _, c := range columns {
-		if len(c.Field) > spec.fieldLen {
-			spec.fieldLen = len(c.Field)
+		if len(c.Field) > spec.FieldLen {
+			spec.FieldLen = len(c.Field)
 		}
 
-		if len(c.Type) > spec.typeLen {
-			spec.typeLen = len(c.Type)
+		if len(c.Type) > spec.TypeLen {
+			spec.TypeLen = len(c.Type)
 		}
 
-		if len(c.Null) > spec.nullLen {
-			spec.nullLen = len(c.Null)
+		if len(c.Null) > spec.NullLen {
+			spec.NullLen = len(c.Null)
 		}
 
-		if len(c.Key) > spec.keyLen {
-			spec.keyLen = len(c.Key)
+		if len(c.Key) > spec.KeyLen {
+			spec.KeyLen = len(c.Key)
 		}
 
-		if c.Default.Valid && len(c.Default.String) > spec.defaultLen {
-			spec.defaultLen = len(c.Default.String)
+		if c.Default.Valid && len(c.Default.String) > spec.DefaultLen {
+			spec.DefaultLen = len(c.Default.String)
 		}
 
-		if len(c.Extra) > spec.extraLen {
-			spec.extraLen = len(c.Extra)
+		if len(c.Extra) > spec.ExtraLen {
+			spec.ExtraLen = len(c.Extra)
 		}
 	}
 
