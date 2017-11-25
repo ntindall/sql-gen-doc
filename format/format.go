@@ -19,12 +19,12 @@ func makeHeader(f formatSpec) string {
 	}
 
 	dashes := "|" + strings.Join([]string{
-		strings.Repeat("-", f.FieldLen+2),
-		strings.Repeat("-", f.TypeLen+2),
-		strings.Repeat("-", f.NullLen+2),
-		strings.Repeat("-", f.KeyLen+2),
-		strings.Repeat("-", f.DefaultLen+2),
-		strings.Repeat("-", f.ExtraLen+2),
+		strings.Repeat("-", f.FieldLen+4),
+		strings.Repeat("-", f.TypeLen+4),
+		strings.Repeat("-", f.NullLen+4),
+		strings.Repeat("-", f.KeyLen+4),
+		strings.Repeat("-", f.DefaultLen+4),
+		strings.Repeat("-", f.ExtraLen+4),
 	}, "|") + "|" + "\n"
 
 	return header.format(f) + dashes

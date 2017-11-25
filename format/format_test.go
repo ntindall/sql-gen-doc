@@ -3,6 +3,7 @@ package format
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -45,6 +46,12 @@ func TestPadRemainingWidth(t *testing.T) {
 			inputWidth:  10,
 			shouldPanic: true,
 		},
+		{
+			desc:        "pads additional two characters if input is empty string",
+			inputString: "", // 0 characters
+			inputWidth:  10,
+			expectation: strings.Repeat(" ", 12),
+		},
 	}
 
 	for i, tc := range testcases {
@@ -82,7 +89,7 @@ func TestColumnDescriptionFormat(t *testing.T) {
 		{
 			desc:        "pads all fields to specified length (works with empty strings)",
 			cd:          ColumnDescription{},
-			expectation: "|       |      |      |     | `NULL`    |       |\n",
+			expectation: "|         |        |        |       | `NULL`    |         |\n",
 		},
 		{
 			desc: "pads all fields to specified length",
@@ -90,7 +97,7 @@ func TestColumnDescriptionFormat(t *testing.T) {
 				Field: "Field", // same length
 				Extra: "s",     //shorter
 			},
-			expectation: "| `Field` |      |      |     | `NULL`    | `s`     |\n",
+			expectation: "| `Field` |        |        |       | `NULL`    | `s`     |\n",
 		},
 		{
 			desc: "writes values to the mark down",
@@ -242,12 +249,12 @@ func TestCreateTableMarkdown(t *testing.T) {
 				},
 			},
 			expectation: "### complex_table\n" +
-				"| `Field`            | `Type`                  | `Null`   | `Key`   | `Default`              | `Extra`       |\n" +
-				"|--------------------|-------------------------|----------|---------|------------------------|---------------|\n" +
-				"| `id`               | `bigint(20) unsigned`   | `NO`     | `PRI`   | `NULL`                 | `PRIMARY KEY` |\n" +
-				"| `created`          | `timestamp(6)`          | `NO`     |         | `CURRENT_TIMESTAMP(6)` |               |\n" +
-				"| `indexed_column`   | `bigint(20) unsigned`   | `NO`     | `MUL`   | `NULL`                 |               |\n" +
-				"| `request_id`       | `varchar(255)`          | `YES`    |         | `NULL`                 |               |\n",
+				"| `Field`          | `Type`                | `Null` | `Key` | `Default`              | `Extra`       |\n" +
+				"|------------------|-----------------------|--------|-------|------------------------|---------------|\n" +
+				"| `id`             | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`                 | `PRIMARY KEY` |\n" +
+				"| `created`        | `timestamp(6)`        | `NO`   |       | `CURRENT_TIMESTAMP(6)` |               |\n" +
+				"| `indexed_column` | `bigint(20) unsigned` | `NO`   | `MUL` | `NULL`                 |               |\n" +
+				"| `request_id`     | `varchar(255)`        | `YES`  |       | `NULL`                 |               |\n",
 		},
 	}
 

@@ -29,55 +29,49 @@ type formatSpec struct {
 
 func monospaceIfNotEmpty(
 	key string,
-	lenAccessor string,
 ) string {
-	return "{{if " + key + "}}`{{" + key + "}}`{{end}}" +
-		"{{pad_remaining_width " + key + " " + lenAccessor + "}}"
+	return "{{if " + key + "}}`{{" + key + "}}`{{end}}"
 }
 
 func padRemainingWidth(
 	s string,
 	width int,
 ) string {
-	if width-len(s) < 0 {
-		return ""
+	val := strings.Repeat(" ", width-len(s))
+
+	// When the string is empty, we pad an _additional_ two characters to
+	// accomodate the missing backticks
+	if s == "" {
+		return val + "  "
 	}
-	return strings.Repeat(" ", width-len(s))
+
+	return val
 }
 
 func (c ColumnDescription) format(f formatSpec) string {
-	fieldTpl := monospaceIfNotEmpty(".Field", ".FieldLen")
-	typeTpl := monospaceIfNotEmpty(".Type", ".TypeLen")
-	nullTpl := monospaceIfNotEmpty(".Null", ".NullLen")
-	keyTpl := monospaceIfNotEmpty(".Key", ".KeyLen")
-	defaultTpl :=
-		"{{if .Default.Valid}}`{{.Default.String}}`{{pad_remaining_width `{{.Default.String}}` .DefaultLen}}" +
-			"{{else}}`NULL`{{pad_remaining_width `NULL` .DefaultLen}}{{end}}"
-	extraTpl := monospaceIfNotEmpty(".Extra", ".ExtraLen")
+	fieldTpl := monospaceIfNotEmpty(".Field")
+	typeTpl := monospaceIfNotEmpty(".Type")
+	nullTpl := monospaceIfNotEmpty(".Null")
+	keyTpl := monospaceIfNotEmpty(".Key")
+	defaultTpl := "{{if .Default.Valid}}`{{.Default.String}}`{{else}}`NULL`{{end}}"
+	extraTpl := monospaceIfNotEmpty(".Extra")
 
-	tplString := "| " + strings.Join([]string{
-		fieldTpl,
-		typeTpl,
-		nullTpl,
-		keyTpl,
-		defaultTpl,
-		extraTpl,
-	}, " | ") + " |\n"
-
-	t := template.Must(template.New("column_description").Funcs(map[string]interface{}{
-		"pad_remaining_width": padRemainingWidth,
-	}).Parse(tplString))
-
-	merged := struct {
-		ColumnDescription
-		formatSpec
-	}{
-		c,
-		f,
+	defaultStr := "NULL"
+	if c.Default.Valid {
+		defaultStr = c.Default.String
 	}
 
+	tplString := "| " + fieldTpl + padRemainingWidth(c.Field, f.FieldLen) +
+		" | " + typeTpl + padRemainingWidth(c.Type, f.TypeLen) +
+		" | " + nullTpl + padRemainingWidth(c.Null, f.NullLen) +
+		" | " + keyTpl + padRemainingWidth(c.Key, f.KeyLen) +
+		" | " + defaultTpl + padRemainingWidth(defaultStr, f.DefaultLen) +
+		" | " + extraTpl + padRemainingWidth(c.Extra, f.ExtraLen) +
+		" |\n"
+
+	t := template.Must(template.New("column_description").Parse(tplString))
 	var tpl bytes.Buffer
-	if err := t.Execute(&tpl, &merged); err != nil {
+	if err := t.Execute(&tpl, c); err != nil {
 		panic(err)
 	}
 
