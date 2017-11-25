@@ -41,7 +41,7 @@ more documentation!
 
 ## Output
 
-See [fixtures/expected1.md](fixtures/expected1.md) and [fixtures/expected2.md](fixtures/expected12.md) for examples.
+See [fixtures/expected1.md](fixtures/expected1.md) and [fixtures/expected2.md](fixtures/expected2.md) for examples.
 
 ## Development
 
