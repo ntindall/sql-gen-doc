@@ -6,5 +6,5 @@ COPY Makefile ./
 ADD scripts scripts
 COPY Gopkg.lock Gopkg.toml ./
 RUN make setup
-COPY cmd/ format/ ./
+COPY ./ ./
 RUN make build

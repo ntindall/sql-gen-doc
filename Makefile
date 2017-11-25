@@ -14,9 +14,16 @@ setup: install-dep vendor bin/golint
 install-dep:
 	@./scripts/install-dep.sh
 
+.PHONY: update
+update:
+	@echo "$(GREEN)updating vendored dependencies...$(RESET)"
+	@dep ensure -v
+
 vendor: Gopkg.toml Gopkg.lock
 	@echo "$(GREEN)installing vendored dependencies...$(RESET)"
-	@dep ensure -v
+	@# use the vendor-only flag to prevent us from removing dependencies before
+	@# they are added to the docker container
+	@dep ensure -v --vendor-only
 
 bin/golint: vendor
 	@echo "$(MAGENTA)building $(@)...$(RESET)"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-set -euox pipefail
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+set -euo pipefail
+DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # shellcheck source=/dev/null
 source "$DIR"/logs.sh
