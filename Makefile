@@ -10,6 +10,10 @@ RESET = \033[0;0m
 .PHONY: setup
 setup: install-dep vendor bin/golint
 
+.PHONY: clean
+clean:
+	rm -rf logs/*
+
 .PHONY: install-dep
 install-dep:
 	@./scripts/install-dep.sh
@@ -61,7 +65,7 @@ docker-test:
 	@docker-compose -f docker-compose.yml run test_container make test
 
 .PHONY: test
-test: go-test go-lint build
+test: clean go-test go-lint build
 
 .PHONY: go-test
 go-test:
