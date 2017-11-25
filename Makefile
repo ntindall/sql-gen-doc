@@ -33,6 +33,11 @@ bin/sql-gen-doc: $(GO_SRC_FILES)
 
 # testing / linting
 
+.PHONY: docker-test
+docker-test:
+	@docker-compose -f docker-compose.yml build test_container
+	@docker-compose -f docker-compose.yml run test_container make test
+
 .PHONY: test
 test: go-test go-lint build
 
