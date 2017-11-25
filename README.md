@@ -23,7 +23,7 @@ Usage of ./bin/sql-gen-doc:
   -o string
       the outfile to write the documentation to, if no outfile is specified, the output is written to stdout
 
-$ ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate -out outfile.md'
+$ ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate' -out outfile.md
 ```
 
 Additionally, the markdown file can be annotated with comments in order to have
