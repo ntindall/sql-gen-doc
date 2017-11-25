@@ -1,7 +1,10 @@
 package format
 
 import (
+	"bytes"
 	"database/sql"
+	"html/template"
+	"strings"
 )
 
 // ColumnDescription contains all the data rendered about a sql column by the
@@ -16,25 +19,68 @@ type ColumnDescription struct {
 }
 
 type formatSpec struct {
-	fieldLen   int
-	typeLen    int
-	nullLen    int
-	keyLen     int
-	defaultLen int
-	extraLen   int
+	FieldLen   int
+	TypeLen    int
+	NullLen    int
+	KeyLen     int
+	DefaultLen int
+	ExtraLen   int
+}
+
+func monospaceIfNotEmpty(
+	key string,
+	lenAccessor string,
+) string {
+	return "{{if " + key + "}}`{{" + key + "}}`{{end}}" +
+		"{{pad_remaining_width " + key + " " + lenAccessor + "}}"
+}
+
+func padRemainingWidth(
+	s string,
+	width int,
+) string {
+	if width-len(s) < 0 {
+		return ""
+	}
+	return strings.Repeat(" ", width-len(s))
 }
 
 func (c ColumnDescription) format(f formatSpec) string {
-	defaultStr := "NULL"
-	if c.Default.Valid {
-		defaultStr = c.Default.String
+	fieldTpl := monospaceIfNotEmpty(".Field", ".FieldLen")
+	typeTpl := monospaceIfNotEmpty(".Type", ".TypeLen")
+	nullTpl := monospaceIfNotEmpty(".Null", ".NullLen")
+	keyTpl := monospaceIfNotEmpty(".Key", ".KeyLen")
+	defaultTpl :=
+		"{{if .Default.Valid}}`{{.Default.String}}`{{pad_remaining_width `{{.Default.String}}` .DefaultLen}}" +
+			"{{else}}`NULL`{{pad_remaining_width `NULL` .DefaultLen}}{{end}}"
+	extraTpl := monospaceIfNotEmpty(".Extra", ".ExtraLen")
+
+	tplString := "| " + strings.Join([]string{
+		fieldTpl,
+		typeTpl,
+		nullTpl,
+		keyTpl,
+		defaultTpl,
+		extraTpl,
+	}, " | ") + " |\n"
+
+	t := template.Must(template.New("column_description").Funcs(map[string]interface{}{
+		"pad_remaining_width": padRemainingWidth,
+	}).Parse(tplString))
+
+	merged := struct {
+		ColumnDescription
+		formatSpec
+	}{
+		c,
+		f,
 	}
 
-	return "| " + c.Field + padRemainingWidth(c.Field, f.fieldLen) +
-		" | " + c.Type + padRemainingWidth(c.Type, f.typeLen) +
-		" | " + c.Null + padRemainingWidth(c.Null, f.nullLen) +
-		" | " + c.Key + padRemainingWidth(c.Key, f.keyLen) +
-		" | " + defaultStr + padRemainingWidth(defaultStr, f.defaultLen) +
-		" | " + c.Extra + padRemainingWidth(c.Extra, f.extraLen) +
-		" |\n"
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, &merged); err != nil {
+		panic(err)
+	}
+
+	return tpl.String()
+
 }

@@ -9,10 +9,6 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-const (
-	defaultBufferSize = 65536
-)
-
 // CreateDatabaseConnection creates a connection to the database. The connection
 // is long lived and should only be created once per process.
 func CreateDatabaseConnection(

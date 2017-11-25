@@ -11,12 +11,12 @@ import (
 
 // Fixture used for testing the format spec logic.
 var defaultFormatSpec = formatSpec{
-	fieldLen:   len("Field"),
-	typeLen:    len("Type"),
-	nullLen:    len("Null"),
-	keyLen:     len("Key"),
-	defaultLen: len("Default"),
-	extraLen:   len("Extra"),
+	FieldLen:   len("Field"),
+	TypeLen:    len("Type"),
+	NullLen:    len("Null"),
+	KeyLen:     len("Key"),
+	DefaultLen: len("Default"),
+	ExtraLen:   len("Extra"),
 }
 
 func TestPadRemainingWidth(t *testing.T) {
@@ -66,12 +66,12 @@ func TestPadRemainingWidth(t *testing.T) {
 
 func TestColumnDescriptionFormat(t *testing.T) {
 	testingFormatSpec := formatSpec{
-		fieldLen:   len("Field"),
-		typeLen:    len("Type"),
-		nullLen:    len("Null"),
-		keyLen:     len("Key"),
-		defaultLen: len("Default"),
-		extraLen:   len("Extra"),
+		FieldLen:   len("Field"),
+		TypeLen:    len("Type"),
+		NullLen:    len("Null"),
+		KeyLen:     len("Key"),
+		DefaultLen: len("Default"),
+		ExtraLen:   len("Extra"),
 	}
 
 	testcases := []struct {
@@ -82,7 +82,7 @@ func TestColumnDescriptionFormat(t *testing.T) {
 		{
 			desc:        "pads all fields to specified length (works with empty strings)",
 			cd:          ColumnDescription{},
-			expectation: "|       |      |      |     | NULL    |       |\n",
+			expectation: "|       |      |      |     | `NULL`    |       |\n",
 		},
 		{
 			desc: "pads all fields to specified length",
@@ -90,7 +90,7 @@ func TestColumnDescriptionFormat(t *testing.T) {
 				Field: "Field", // same length
 				Extra: "s",     //shorter
 			},
-			expectation: "| Field |      |      |     | NULL    | s     |\n",
+			expectation: "| `Field` |      |      |     | `NULL`    | `s`     |\n",
 		},
 		{
 			desc: "writes values to the mark down",
@@ -102,7 +102,7 @@ func TestColumnDescriptionFormat(t *testing.T) {
 				Default: sql.NullString{String: "n", Valid: true},
 				Extra:   "a",
 			},
-			expectation: "| b     | a    | n    | a   | n       | a     |\n",
+			expectation: "| `b`     | `a`    | `n`    | `a`   | `n`       | `a`     |\n",
 		},
 	}
 
@@ -169,12 +169,13 @@ func TestGetFormatSpec(t *testing.T) {
 				},
 			},
 			expectation: formatSpec{
-				fieldLen:   22,
-				typeLen:    20,
-				nullLen:    18,
-				keyLen:     16,
-				defaultLen: 14,
-				extraLen:   12,
+				// we add two to the length of the string to accomodate the backtick.
+				FieldLen:   22,
+				TypeLen:    20,
+				NullLen:    18,
+				KeyLen:     16,
+				DefaultLen: 14,
+				ExtraLen:   12,
 			},
 		},
 	}
@@ -206,11 +207,10 @@ func TestCreateTableMarkdown(t *testing.T) {
 					Extra: "PRIMARY KEY",
 				},
 			},
-			expectation: `### simple_table
-| Field | Type                | Null | Key | Default | Extra       |
-|-------|---------------------|------|-----|---------|-------------|
-| id    | bigint(20) unsigned | NO   | PRI | NULL    | PRIMARY KEY |
-`,
+			expectation: "### simple_table\n" +
+				"| `Field` | `Type`                | `Null` | `Key` | `Default` | `Extra`       |\n" +
+				"|---------|-----------------------|--------|-------|-----------|---------------|\n" +
+				"| `id`    | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`    | `PRIMARY KEY` |\n",
 		},
 		{
 			desc:      "works with more complicated table",
@@ -241,14 +241,13 @@ func TestCreateTableMarkdown(t *testing.T) {
 					Null:  "YES",
 				},
 			},
-			expectation: `### complex_table
-| Field          | Type                | Null | Key | Default              | Extra       |
-|----------------|---------------------|------|-----|----------------------|-------------|
-| id             | bigint(20) unsigned | NO   | PRI | NULL                 | PRIMARY KEY |
-| created        | timestamp(6)        | NO   |     | CURRENT_TIMESTAMP(6) |             |
-| indexed_column | bigint(20) unsigned | NO   | MUL | NULL                 |             |
-| request_id     | varchar(255)        | YES  |     | NULL                 |             |
-`,
+			expectation: "### complex_table\n" +
+				"| `Field`            | `Type`                  | `Null`   | `Key`   | `Default`              | `Extra`       |\n" +
+				"|--------------------|-------------------------|----------|---------|------------------------|---------------|\n" +
+				"| `id`               | `bigint(20) unsigned`   | `NO`     | `PRI`   | `NULL`                 | `PRIMARY KEY` |\n" +
+				"| `created`          | `timestamp(6)`          | `NO`     |         | `CURRENT_TIMESTAMP(6)` |               |\n" +
+				"| `indexed_column`   | `bigint(20) unsigned`   | `NO`     | `MUL`   | `NULL`                 |               |\n" +
+				"| `request_id`       | `varchar(255)`          | `YES`    |         | `NULL`                 |               |\n",
 		},
 	}
 
