@@ -46,7 +46,7 @@ build: bin/sql-gen-doc
 
 bin/sql-gen-doc: $(GO_SRC_FILES)
 	@echo "$(MAGENTA)building $(@)...$(RESET)"
-	go build -o bin/sql-gen-doc ./cmd
+	go build -o bin/sql-gen-doc ./main.go
 
 # images
 .PHONY: images
