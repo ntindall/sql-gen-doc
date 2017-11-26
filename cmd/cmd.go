@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -33,7 +33,8 @@ func init() {
 	}
 }
 
-func main() {
+// Execute is the primary driver for the sql-gen-doc functionality.
+func Execute() {
 	ctx := context.Background()
 	db, err := format.CreateDatabaseConnection(ctx, *flagDSN)
 	if err != nil {
