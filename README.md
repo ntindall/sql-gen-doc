@@ -47,8 +47,19 @@ See [fixtures/expected1.md](fixtures/expected1.md) and [fixtures/expected2.md](f
 
 ## Development
 
-```sh
-  git clone git@github.com:ntindall/sql-gen-doc.git $GOPATH/src/github.com/ntindall/sql-gen-doc
-  cd $GOPATH/src/github.com/ntindall/sql-gen-doc
-  make setup
-```
+1. This project uses `docker` and `docker-compose` for testing, see [here](https://docs.docker.com/compose/install/)
+   for the setup instructions for your operating system.
+
+2. Run the following to clone and setup the project.
+
+  ```sh
+    git clone git@github.com:ntindall/sql-gen-doc.git $GOPATH/src/github.com/ntindall/sql-gen-doc
+    cd $GOPATH/src/github.com/ntindall/sql-gen-doc
+    make setup
+  ```
+
+3. Run the test suite
+
+  ```sh
+    make docker-test
+  ```
