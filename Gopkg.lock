@@ -8,27 +8,36 @@
   version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
-  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
-  version = "v1.3"
+  revision = "3287d94d4c6a48a63e16fffaabf27ab20203af2a"
 
 [[projects]]
   branch = "master"
   name = "github.com/golang/lint"
-  packages = [".","golint"]
+  packages = [
+    ".",
+    "golint"
+  ]
   revision = "6aaf7c34af0f4c36a57e0c429bace4d706d8e931"
 
 [[projects]]
   branch = "master"
   name = "github.com/jmoiron/sqlx"
-  packages = [".","reflectx"]
+  packages = [
+    ".",
+    "reflectx"
+  ]
   revision = "3379e5993990b1f927fc8db926485e6f6becf2d2"
 
 [[projects]]
   branch = "master"
   name = "github.com/lib/pq"
-  packages = [".","oid"]
+  packages = [
+    ".",
+    "oid"
+  ]
   revision = "8c6ee72f3e6bcb1542298dd5f76cb74af9742cec"
 
 [[projects]]
@@ -51,13 +60,20 @@
 
 [[projects]]
   name = "github.com/stretchr/testify"
-  packages = ["assert","require"]
+  packages = [
+    "assert",
+    "require"
+  ]
   revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
   version = "v1.1.4"
 
 [[projects]]
   name = "github.com/ziutek/mymysql"
-  packages = ["godrv","mysql","native"]
+  packages = [
+    "godrv",
+    "mysql",
+    "native"
+  ]
   revision = "e08c2f35356576b3c3690c252fe5dca728ae9292"
   version = "v1.5.4"
 
@@ -70,12 +86,22 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/tools"
-  packages = ["go/gcexportdata","go/gcimporter15","go/types/typeutil"]
+  packages = [
+    "go/gcexportdata",
+    "go/gcimporter15",
+    "go/types/typeutil"
+  ]
   revision = "6d70fb2e85323e81c89374331d3d2b93304faa36"
+
+[[projects]]
+  name = "google.golang.org/appengine"
+  packages = ["cloudsql"]
+  revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
+  version = "v1.0.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7b4ec3bcc60c0b4be4df2a9b5da2695ab3fc4c39415caed2e182f2998f759a0c"
+  inputs-digest = "db335971e6038d91d52112436acd64bcba1fd9bc3d09aee0a7b56010fe584ef5"
   solver-name = "gps-cdcl"
   solver-version = 1
