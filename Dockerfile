@@ -1,15 +1,15 @@
-FROM circleci/golang:1.8
+FROM circleci/golang:1.15
 USER root
 WORKDIR /go/src/github.com/ntindall/sql-gen-doc
 
 RUN apt-get update \
    && apt-get install -y --force-yes --no-install-recommends\
-   mysql-client \
-   libmysqlclient-dev
+   default-mysql-client \
+   default-libmysqlclient-dev
 
 COPY Makefile ./
-ADD scripts/install-dep.sh scripts/logs.sh ./scripts/
-COPY Gopkg.lock Gopkg.toml ./
-RUN make setup
+ADD scripts/logs.sh ./scripts/
+COPY go.mod go.sum ./
 COPY ./ ./
+RUN make setup
 RUN make build

@@ -1,6 +1,6 @@
 GO_SRC_FILES = $(shell find . -type f -name '*.go' | sed /vendor/d )
-GO_SRC_PACKAGES =$(shell go list ./... | sed /vendor/d )
-GOLINT_SRC = ./vendor/github.com/golang/lint/golint
+GO_SRC_PACKAGES =$(shell go list ./... | sed /vendor/d  | sed /imports/d)
+GOLINT_SRC = ./vendor/golang.org/x/lint/golint
 GOOSE_SRC = ./vendor/github.com/pressly/goose/cmd/goose
 
 # vanity
@@ -10,26 +10,16 @@ RESET = \033[0;0m
 
 # setup
 .PHONY: setup
-setup: install-dep vendor bin/golint bin/goose
+setup: vendor bin/golint bin/goose
 
 .PHONY: clean
 clean:
 	rm -rf logs/*
 
-.PHONY: install-dep
-install-dep:
-	@./scripts/install-dep.sh
-
-.PHONY: update
-update:
-	@echo "$(GREEN)updating vendored dependencies...$(RESET)"
-	@dep ensure -v
-
-vendor: Gopkg.toml Gopkg.lock
+vendor: go.mod go.sum
 	@echo "$(GREEN)installing vendored dependencies...$(RESET)"
-	@# use the vendor-only flag to prevent us from removing dependencies before
-	@# they are added to the docker container
-	@dep ensure -v --vendor-only
+	go mod download
+	go mod vendor -v
 
 bin/golint: vendor
 	@echo "$(MAGENTA)building $(@)...$(RESET)"
@@ -80,7 +70,7 @@ test: go-test go-lint build
 .PHONY: go-test
 go-test:
 	@echo "$(MAGENTA)running go tests...$(RESET)"
-	@go test -v $(GO_SRC_PACKAGES)
+	go test -v $(GO_SRC_PACKAGES)
 
 .PHONY: go-lint
 go-lint: bin/golint
