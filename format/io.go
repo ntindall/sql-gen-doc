@@ -50,6 +50,7 @@ func DescribeTable(
 ) ([]ColumnDescription, error) {
 	result := []ColumnDescription{}
 
+	// TODO: this should be updated to leverage show create table?
 	if err := db.SelectContext(ctx, &result, "DESCRIBE "+tableName); err != nil {
 		return nil, err
 	}
