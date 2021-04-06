@@ -10,26 +10,15 @@ RESET = \033[0;0m
 
 # setup
 .PHONY: setup
-setup: install-dep vendor bin/golint bin/goose
+setup: vendor bin/golint bin/goose
 
 .PHONY: clean
 clean:
 	rm -rf logs/*
 
-.PHONY: install-dep
-install-dep:
-	@./scripts/install-dep.sh
-
-.PHONY: update
-update:
-	@echo "$(GREEN)updating vendored dependencies...$(RESET)"
-	@dep ensure -v
-
-vendor: Gopkg.toml Gopkg.lock
+vendor: go.mod go.sum
 	@echo "$(GREEN)installing vendored dependencies...$(RESET)"
-	@# use the vendor-only flag to prevent us from removing dependencies before
-	@# they are added to the docker container
-	@dep ensure -v --vendor-only
+	@go mod download
 
 bin/golint: vendor
 	@echo "$(MAGENTA)building $(@)...$(RESET)"
