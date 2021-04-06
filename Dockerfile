@@ -4,12 +4,12 @@ WORKDIR /go/src/github.com/ntindall/sql-gen-doc
 
 RUN apt-get update \
    && apt-get install -y --force-yes --no-install-recommends\
-   mysql-client \
-   libmysqlclient-dev
+   default-mysql-client \
+   default-libmysqlclient-dev
 
 COPY Makefile ./
 ADD scripts/logs.sh ./scripts/
 COPY go.mod go.sum ./
-RUN make setup
 COPY ./ ./
+RUN make setup
 RUN make build
