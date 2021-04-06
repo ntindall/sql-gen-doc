@@ -8,8 +8,8 @@ RUN apt-get update \
    libmysqlclient-dev
 
 COPY Makefile ./
-ADD scripts/install-dep.sh scripts/logs.sh ./scripts/
-COPY Gopkg.lock Gopkg.toml ./
+ADD scripts/logs.sh ./scripts/
+COPY go.mod go.sum ./
 RUN make setup
 COPY ./ ./
 RUN make build
