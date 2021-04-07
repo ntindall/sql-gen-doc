@@ -53,6 +53,11 @@ func Execute() {
 			logger.Fatalf("couldn't query database to describe table %s. reason: %s", tableName, err)
 		}
 
+		indexData, err := format.GetIndexes(ctx, db, tableName)
+		if err != nil {
+			logger.Fatalf("couldn't query database to fetch index data", tableName, err)
+		}
+
 		markdown += format.CreateTableMarkdown(tableName, columns)
 		if idx != len(tables)-1 {
 			markdown += "\n"

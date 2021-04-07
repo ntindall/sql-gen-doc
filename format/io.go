@@ -50,8 +50,23 @@ func DescribeTable(
 ) ([]ColumnDescription, error) {
 	result := []ColumnDescription{}
 
-	// TODO: this should be updated to leverage show create table?
 	if err := db.SelectContext(ctx, &result, "DESCRIBE "+tableName); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// GetIndexes queries the database for information about the specified
+// table. The result is scanned into a ColumnDescription struct.
+func GetIndexes(
+	ctx context.Context,
+	db *sqlx.DB,
+	tableName string,
+) ([]ColumnDescription, error) {
+	result := []IndexDescription{}
+
+	if err := db.SelectContext(ctx, &result, "SHOW INDEXES FROM "+tableName); err != nil {
 		return nil, err
 	}
 
