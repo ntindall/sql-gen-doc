@@ -81,6 +81,7 @@ func makeTitle(s string) string {
 func CreateTableMarkdown(
 	table string,
 	columns []ColumnDescription,
+	indexes []LogicalIndex,
 ) string {
 	tableMarkdown := makeTitle(table)
 

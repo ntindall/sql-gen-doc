@@ -58,9 +58,12 @@ func Execute() {
 			logger.Fatalf("couldn't query database to fetch index data", tableName, err)
 		}
 
-		fmt.Println(indexData.ConvertToLogicalIndexes())
+		logicalIndexes, err := indexData.ConvertToLogicalIndexes()
+		if err != nil {
+			logger.Fatalf("couldn't convert data to logical indexes", tableName, err)
+		}
 
-		markdown += format.CreateTableMarkdown(tableName, columns)
+		markdown += format.CreateTableMarkdown(tableName, columns, logicalIndexes)
 		if idx != len(tables)-1 {
 			markdown += "\n"
 		}
