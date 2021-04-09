@@ -1,98 +1,68 @@
 package format
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
+
+	"github.com/olekukonko/tablewriter"
 )
-
-func makeHeader(f formatSpec) string {
-	// TODO: a better abstraction for styling column description fields.
-	// we add two to the expected length to accomodate the missing backticks.
-	header := "| " + strings.Join([]string{
-		"Field" + padRemainingWidth("Field", f.FieldLen+2),
-		"Type" + padRemainingWidth("Type", f.TypeLen+2),
-		"Null" + padRemainingWidth("Null", f.NullLen+2),
-		"Key" + padRemainingWidth("Key", f.KeyLen+2),
-		"Default" + padRemainingWidth("Default", f.DefaultLen+2),
-		"Extra" + padRemainingWidth("Extra", f.ExtraLen+2),
-	}, " | ") + " |\n"
-
-	dashes := "|" + strings.Join([]string{
-		// we add two for each backtick present around the column name, plus an
-		// additional two for the spacing on either side.
-		strings.Repeat("-", f.FieldLen+4),
-		strings.Repeat("-", f.TypeLen+4),
-		strings.Repeat("-", f.NullLen+4),
-		strings.Repeat("-", f.KeyLen+4),
-		strings.Repeat("-", f.DefaultLen+4),
-		strings.Repeat("-", f.ExtraLen+4),
-	}, "|") + "|" + "\n"
-
-	return header + dashes
-}
-
-func getFormatSpec(columns []ColumnDescription) formatSpec {
-	spec := formatSpec{
-		FieldLen:   len("Field"),
-		TypeLen:    len("Type"),
-		NullLen:    len("Null"),
-		KeyLen:     len("Key"),
-		DefaultLen: len("Default"),
-		ExtraLen:   len("Extra"),
-	}
-
-	// Iterate over each column
-	for _, c := range columns {
-		if len(c.Field) > spec.FieldLen {
-			spec.FieldLen = len(c.Field)
-		}
-
-		if len(c.Type) > spec.TypeLen {
-			spec.TypeLen = len(c.Type)
-		}
-
-		if len(c.Null) > spec.NullLen {
-			spec.NullLen = len(c.Null)
-		}
-
-		if len(c.Key) > spec.KeyLen {
-			spec.KeyLen = len(c.Key)
-		}
-
-		if c.Default.Valid && len(c.Default.String) > spec.DefaultLen {
-			spec.DefaultLen = len(c.Default.String)
-		}
-
-		if len(c.Extra) > spec.ExtraLen {
-			spec.ExtraLen = len(c.Extra)
-		}
-	}
-
-	return spec
-}
 
 func makeTitle(s string) string {
 	return "### " + s + "\n"
+}
+
+func wrapBackTicks(s string) string {
+	if s == "" {
+		return s
+	}
+	return "`" + s + "`"
 }
 
 // CreateTableMarkdown takes the name of a table in a database and a list of
 // ColumnDescription and returns a formatted markdown table with the
 // corresponding data.
 func CreateTableMarkdown(
-	table string,
+	tableName string,
 	columns []ColumnDescription,
 	indexes []LogicalIndex,
 ) string {
-	tableMarkdown := makeTitle(table)
+	tableMarkdown := bytes.NewBufferString(`### ` + tableName + "\n")
 
-	formatSpec := getFormatSpec(columns)
-	tableMarkdown = tableMarkdown + makeHeader(formatSpec)
+	tableMarkdown.WriteString("#### SCHEMA\n")
+	columnsTable := tablewriter.NewWriter(tableMarkdown)
+	columnsTable.SetHeader([]string{"FIELD", "TYPE", "NULL", "KEY", "DEFAULT", "EXTRA"})
+	columnsTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
+	columnsTable.SetCenterSeparator("|")
 
-	for _, c := range columns {
-		tableMarkdown += c.format(formatSpec)
+	for _, col := range columns {
+		columnsTable.Append([]string{wrapBackTicks(col.Field), wrapBackTicks(col.Type), wrapBackTicks(col.Null), wrapBackTicks(col.Key), wrapBackTicks(col.Default.String), wrapBackTicks(col.Extra)})
 	}
 
-	return tableMarkdown
+	// write the columns table to the buf
+	columnsTable.Render()
+	tableMarkdown.WriteString("\n")
+
+	// format the indexes
+	tableMarkdown.WriteString("#### INDEXES\n")
+	indexesTable := tablewriter.NewWriter(tableMarkdown)
+	indexesTable.SetHeader([]string{"KEY NAME", "NON UNIQUE", "COLUMNS"})
+	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
+	indexesTable.SetCenterSeparator("|")
+
+	for _, idx := range indexes {
+		indexesTable.Append([]string{
+			wrapBackTicks(idx.KeyName),
+			wrapBackTicks(fmt.Sprintf("%t", idx.NonUnique)),
+			wrapBackTicks(fmt.Sprintf(`(%s)`, strings.Join(idx.IndexedColumnNamesOrdered, ", "))),
+		})
+	}
+
+	// write the columns table to the buf
+	indexesTable.Render()
+	tableMarkdown.WriteString("\n")
+
+	return tableMarkdown.String()
 }
 
 func insertBetweenTags(
