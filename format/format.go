@@ -32,7 +32,7 @@ func CreateTableMarkdown(
 	tableMarkdown.WriteString("#### SCHEMA\n")
 	columnsTable := tablewriter.NewWriter(tableMarkdown)
 	columnsTable.SetHeader([]string{"FIELD", "TYPE", "NULL", "KEY", "DEFAULT", "EXTRA"})
-	columnsTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
+	columnsTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	columnsTable.SetAutoWrapText(false)
 	columnsTable.SetCenterSeparator("|")
 
@@ -47,7 +47,7 @@ func CreateTableMarkdown(
 	tableMarkdown.WriteString("#### INDEXES\n")
 	indexesTable := tablewriter.NewWriter(tableMarkdown)
 	indexesTable.SetHeader([]string{"KEY NAME", "UNIQUE", "COLUMNS"})
-	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
+	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	indexesTable.SetAutoWrapText(false)
 	indexesTable.SetCenterSeparator("|")
 

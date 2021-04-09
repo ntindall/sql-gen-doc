@@ -23,24 +23,20 @@
 | `varbin_`   | `varbinary(255)`      | `YES` |       |                        |                                  |
 | `blob_`     | `blob`                | `YES` |       |                        |                                  |
 | `longblog_` | `longblob`            | `YES` |       |                        |                                  |
-|-------------|-----------------------|-------|-------|------------------------|----------------------------------|
 #### INDEXES
 | KEY NAME  | UNIQUE |  COLUMNS  |
 |-----------|--------|-----------|
 | `PRIMARY` | `true` | `(char_)` |
-|-----------|--------|-----------|
 
 ### companies
 #### SCHEMA
 |    FIELD     |   TYPE    | NULL |  KEY  | DEFAULT | EXTRA |
 |--------------|-----------|------|-------|---------|-------|
 | `company_id` | `int(11)` | `NO` | `PRI` | `0`     |       |
-|--------------|-----------|------|-------|---------|-------|
 #### INDEXES
 | KEY NAME  | UNIQUE |    COLUMNS     |
 |-----------|--------|----------------|
 | `PRIMARY` | `true` | `(company_id)` |
-|-----------|--------|----------------|
 
 ### employees
 #### SCHEMA
@@ -48,13 +44,11 @@
 |--------------|-----------|------|-------|---------|-------|
 | `company_id` | `int(11)` | `NO` | `PRI` | `0`     |       |
 | `person_id`  | `int(11)` | `NO` | `PRI` | `0`     |       |
-|--------------|-----------|------|-------|---------|-------|
 #### INDEXES
 |        KEY NAME        | UNIQUE  |          COLUMNS          |
 |------------------------|---------|---------------------------|
 | `PRIMARY`              | `true`  | `(company_id, person_id)` |
 | `fk_persons_person_id` | `false` | `(person_id)`             |
-|------------------------|---------|---------------------------|
 
 ### goose_db_version
 #### SCHEMA
@@ -64,13 +58,11 @@
 | `version_id` | `bigint(20)`          | `NO`  |       |                     |                  |
 | `is_applied` | `tinyint(1)`          | `NO`  |       |                     |                  |
 | `tstamp`     | `timestamp`           | `YES` |       | `CURRENT_TIMESTAMP` |                  |
-|--------------|-----------------------|-------|-------|---------------------|------------------|
 #### INDEXES
 | KEY NAME  | UNIQUE | COLUMNS |
 |-----------|--------|---------|
 | `PRIMARY` | `true` | `(id)`  |
 | `id`      | `true` | `(id)`  |
-|-----------|--------|---------|
 
 ### persons
 #### SCHEMA
@@ -81,14 +73,12 @@
 | `first_name` | `varchar(255)` | `YES` |       |         |       |
 | `address`    | `varchar(255)` | `YES` |       |         |       |
 | `city`       | `varchar(255)` | `YES` |       |         |       |
-|--------------|----------------|-------|-------|---------|-------|
 #### INDEXES
 |           KEY NAME            | UNIQUE  |          COLUMNS          |
 |-------------------------------|---------|---------------------------|
 | `PRIMARY`                     | `true`  | `(person_id)`             |
 | `index__last_name`            | `false` | `(last_name)`             |
 | `index__last_name_first_name` | `false` | `(last_name, first_name)` |
-|-------------------------------|---------|---------------------------|
 
 ### random_times
 #### SCHEMA
@@ -97,12 +87,10 @@
 | `id`        | `bigint(20) unsigned` | `NO` | `PRI` |                        | `auto_increment` |
 | `created`   | `timestamp(6)`        | `NO` |       | `CURRENT_TIMESTAMP(6)` |                  |
 | `timestamp` | `datetime(6)`         | `NO` |       |                        |                  |
-|-------------|-----------------------|------|-------|------------------------|------------------|
 #### INDEXES
 | KEY NAME  | UNIQUE | COLUMNS |
 |-----------|--------|---------|
 | `PRIMARY` | `true` | `(id)`  |
-|-----------|--------|---------|
 
 <!-- sql-gen-doc END -->
 
