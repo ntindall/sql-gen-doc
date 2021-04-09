@@ -57,13 +57,13 @@ func DescribeTable(
 	return result, nil
 }
 
-// GetIndexes queries the database for information about the specified
-// table. The result is scanned into a ColumnDescription struct.
-func GetIndexes(
+// GetIndexDescriptions queries the database for information about the specified
+// table. The result is scanned into a IndexDescription struct.
+func GetIndexDescriptions(
 	ctx context.Context,
 	db *sqlx.DB,
 	tableName string,
-) ([]ColumnDescription, error) {
+) (IndexDescriptions, error) {
 	result := []IndexDescription{}
 
 	if err := db.SelectContext(ctx, &result, "SHOW INDEXES FROM "+tableName); err != nil {
