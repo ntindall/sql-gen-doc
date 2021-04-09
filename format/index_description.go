@@ -53,9 +53,17 @@ func (descs IndexDescriptions) ConvertToLogicalIndexes() ([]LogicalIndex, error)
 		indices[description.KeyName] = li
 	}
 
+	// return things in the order they were received -- required for the out
+	// put to be deterministic.
 	result := []LogicalIndex{}
-	for _, logicalIndex := range indices {
-		result = append(result, logicalIndex)
+	var addedKeys = map[string]struct{}{}
+	for _, description := range descs {
+
+		// only add keys once
+		if _, ok := addedKeys[description.KeyName]; !ok {
+			result = append(result, indices[description.KeyName])
+			addedKeys[description.KeyName] = struct{}{}
+		}
 	}
 
 	return result, nil

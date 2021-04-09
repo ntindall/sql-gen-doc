@@ -55,5 +55,7 @@ CREATE TABLE IF NOT EXISTS all_data_types (
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP TABLE IF EXISTS all_data_types;
+DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS persons;
 DROP TABLE IF EXISTS random_times;

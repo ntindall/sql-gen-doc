@@ -33,6 +33,7 @@ func CreateTableMarkdown(
 	columnsTable := tablewriter.NewWriter(tableMarkdown)
 	columnsTable.SetHeader([]string{"FIELD", "TYPE", "NULL", "KEY", "DEFAULT", "EXTRA"})
 	columnsTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
+	columnsTable.SetAutoWrapText(false)
 	columnsTable.SetCenterSeparator("|")
 
 	for _, col := range columns {
@@ -47,6 +48,7 @@ func CreateTableMarkdown(
 	indexesTable := tablewriter.NewWriter(tableMarkdown)
 	indexesTable.SetHeader([]string{"KEY NAME", "UNIQUE", "COLUMNS"})
 	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
+	indexesTable.SetAutoWrapText(false)
 	indexesTable.SetCenterSeparator("|")
 
 	for _, idx := range indexes {

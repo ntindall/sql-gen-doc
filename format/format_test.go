@@ -74,39 +74,3 @@ markdown
 		}
 	}
 }
-
-func TestMakeHeader(t *testing.T) {
-	testcases := []struct {
-		desc        string
-		f           formatSpec
-		expectation string
-	}{
-		{
-			desc: "works with default format spec",
-			f:    defaultFormatSpec,
-			expectation: "" +
-				"| Field   | Type   | Null   | Key   | Default   | Extra   |\n" +
-				"|---------|--------|--------|-------|-----------|---------|\n",
-		},
-		{
-			desc: "pads column names and dashes to correct length",
-			f: formatSpec{
-				FieldLen:   10,
-				TypeLen:    10,
-				NullLen:    20,
-				KeyLen:     10,
-				DefaultLen: 10,
-				ExtraLen:   15,
-			},
-			expectation: "" +
-				"| Field        | Type         | Null                   | Key          | Default      | Extra             |\n" +
-				"|--------------|--------------|------------------------|--------------|--------------|-------------------|\n",
-		},
-	}
-
-	for i, tc := range testcases {
-		t.Logf("test case %d: %s", i, tc.desc)
-		actual := makeHeader(tc.f)
-		assert.Equal(t, tc.expectation, actual)
-	}
-}
