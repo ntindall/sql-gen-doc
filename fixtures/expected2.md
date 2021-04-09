@@ -1,7 +1,7 @@
 # a title
 
 <!-- sql-gen-doc BEGIN -->
-### all_data_types
+## all_data_types
 #### SCHEMA
 |    FIELD    |         TYPE          | NULL  |  KEY  |        DEFAULT         |              EXTRA               |
 |-------------|-----------------------|-------|-------|------------------------|----------------------------------|
@@ -28,7 +28,7 @@
 |-----------|--------|-----------|
 | `PRIMARY` | `true` | `(char_)` |
 
-### companies
+## companies
 #### SCHEMA
 |    FIELD     |   TYPE    | NULL |  KEY  | DEFAULT | EXTRA |
 |--------------|-----------|------|-------|---------|-------|
@@ -38,7 +38,7 @@
 |-----------|--------|----------------|
 | `PRIMARY` | `true` | `(company_id)` |
 
-### employees
+## employees
 #### SCHEMA
 |    FIELD     |   TYPE    | NULL |  KEY  | DEFAULT | EXTRA |
 |--------------|-----------|------|-------|---------|-------|
@@ -50,7 +50,7 @@
 | `PRIMARY`              | `true`  | `(company_id, person_id)` |
 | `fk_persons_person_id` | `false` | `(person_id)`             |
 
-### goose_db_version
+## goose_db_version
 #### SCHEMA
 |    FIELD     |         TYPE          | NULL  |  KEY  |       DEFAULT       |      EXTRA       |
 |--------------|-----------------------|-------|-------|---------------------|------------------|
@@ -64,7 +64,7 @@
 | `PRIMARY` | `true` | `(id)`  |
 | `id`      | `true` | `(id)`  |
 
-### persons
+## persons
 #### SCHEMA
 |    FIELD     |      TYPE      | NULL  |  KEY  | DEFAULT | EXTRA |
 |--------------|----------------|-------|-------|---------|-------|
@@ -80,7 +80,7 @@
 | `index__last_name`            | `false` | `(last_name)`             |
 | `index__last_name_first_name` | `false` | `(last_name, first_name)` |
 
-### random_times
+## random_times
 #### SCHEMA
 |    FIELD    |         TYPE          | NULL |  KEY  |        DEFAULT         |      EXTRA       |
 |-------------|-----------------------|------|-------|------------------------|------------------|

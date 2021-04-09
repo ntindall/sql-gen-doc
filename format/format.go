@@ -27,7 +27,7 @@ func CreateTableMarkdown(
 	columns []ColumnDescription,
 	indexes []LogicalIndex,
 ) string {
-	tableMarkdown := bytes.NewBufferString(`### ` + tableName + "\n")
+	tableMarkdown := bytes.NewBufferString(`## ` + tableName + "\n")
 
 	tableMarkdown.WriteString("#### SCHEMA\n")
 	columnsTable := tablewriter.NewWriter(tableMarkdown)
