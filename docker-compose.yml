@@ -27,6 +27,8 @@ services:
       - MYSQL_PASSWORD=password
     volumes:
       - ./logs:/go/src/github.com/ntindall/sql-gen-doc/logs
+     # for local testing
+     # - .:/go/src/github.com/ntindall/sql-gen-doc
     depends_on:
       mysql:
         condition: service_healthy

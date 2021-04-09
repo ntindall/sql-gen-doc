@@ -45,14 +45,14 @@ func CreateTableMarkdown(
 	// format the indexes
 	tableMarkdown.WriteString("#### INDEXES\n")
 	indexesTable := tablewriter.NewWriter(tableMarkdown)
-	indexesTable.SetHeader([]string{"KEY NAME", "NON UNIQUE", "COLUMNS"})
+	indexesTable.SetHeader([]string{"KEY NAME", "UNIQUE", "COLUMNS"})
 	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: true})
 	indexesTable.SetCenterSeparator("|")
 
 	for _, idx := range indexes {
 		indexesTable.Append([]string{
 			wrapBackTicks(idx.KeyName),
-			wrapBackTicks(fmt.Sprintf("%t", idx.NonUnique)),
+			wrapBackTicks(fmt.Sprintf("%t", !idx.NonUnique)),
 			wrapBackTicks(fmt.Sprintf(`(%s)`, strings.Join(idx.IndexedColumnNamesOrdered, ", "))),
 		})
 	}

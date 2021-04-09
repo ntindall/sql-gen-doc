@@ -1,82 +1,10 @@
 package format
 
 import (
-	"database/sql"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
-
-// table abstraction -> markdown conversion
-func TestCreateTableMarkdown(t *testing.T) {
-	testcases := []struct {
-		desc        string
-		tablename   string
-		cds         []ColumnDescription
-		expectation string
-	}{
-		{
-			desc:      "works with just one column",
-			tablename: "simple_table",
-			cds: []ColumnDescription{
-				{
-					Field: "id",
-					Type:  "bigint(20) unsigned",
-					Null:  "NO",
-					Key:   "PRI",
-					Extra: "PRIMARY KEY",
-				},
-			},
-			expectation: "### simple_table\n" +
-				"| Field   | Type                  | Null   | Key   | Default   | Extra         |\n" +
-				"|---------|-----------------------|--------|-------|-----------|---------------|\n" +
-				"| `id`    | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`    | `PRIMARY KEY` |\n",
-		},
-		{
-			desc:      "works with more complicated table",
-			tablename: "complex_table",
-			cds: []ColumnDescription{
-				{
-					Field: "id",
-					Type:  "bigint(20) unsigned",
-					Null:  "NO",
-					Key:   "PRI",
-					Extra: "PRIMARY KEY",
-				},
-				{
-					Field:   "created",
-					Type:    "timestamp(6)",
-					Null:    "NO",
-					Default: sql.NullString{"CURRENT_TIMESTAMP(6)", true},
-				},
-				{
-					Field: "indexed_column",
-					Type:  "bigint(20) unsigned",
-					Null:  "NO",
-					Key:   "MUL",
-				},
-				{
-					Field: "request_id",
-					Type:  "varchar(255)",
-					Null:  "YES",
-				},
-			},
-			expectation: "### complex_table\n" +
-				"| Field            | Type                  | Null   | Key   | Default                | Extra         |\n" +
-				"|------------------|-----------------------|--------|-------|------------------------|---------------|\n" +
-				"| `id`             | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`                 | `PRIMARY KEY` |\n" +
-				"| `created`        | `timestamp(6)`        | `NO`   |       | `CURRENT_TIMESTAMP(6)` |               |\n" +
-				"| `indexed_column` | `bigint(20) unsigned` | `NO`   | `MUL` | `NULL`                 |               |\n" +
-				"| `request_id`     | `varchar(255)`        | `YES`  |       | `NULL`                 |               |\n",
-		},
-	}
-
-	for i, tc := range testcases {
-		t.Logf("test case %d: %s", i, tc.desc)
-		actual := CreateTableMarkdown(tc.tablename, tc.cds)
-		assert.Equal(t, tc.expectation, actual)
-	}
-}
 
 func TestInsertBetweenTags(t *testing.T) {
 	testcases := []struct {
