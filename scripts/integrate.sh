@@ -24,13 +24,16 @@ make migrate-reset
 log "bringing database back up"
 make migrate-up
 
+had_err=0
+
 # test case 1
 log "testing create a new file"
 ./bin/sql-gen-doc -dsn 'user:password@tcp(mysql:3306)/example' -o tmp/example.md
 cp tmp/example.md logs/out1.md
 if [ "$(diff --text tmp/example.md fixtures/expected1.md |& tee logs/test1.diff)" ]; then
-  log_error "output did not match fixture"
-  exit 1
+  cat tmp/example1.md
+  log_error "output did not match fixture -- see logs/test1.diff"
+  had_err=1
 fi
 
 # test case 2
@@ -40,8 +43,13 @@ cp fixtures/seed2.md tmp/example2.md
 cp tmp/example2.md logs/out2.md
 
 if [ "$(diff --text tmp/example2.md fixtures/expected2.md |& tee logs/test2.diff)" ]; then
-  log_error "output did not match fixture"
-  exit 1
+  cat tmp/example2.md
+  log_error "output did not match fixture -- see logs/test2.diff"
+  had_err=1
+fi
+
+if [ $had_err ]; then
+  exit 0
 fi
 
 log "OK"

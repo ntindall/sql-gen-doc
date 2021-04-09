@@ -1,45 +1,90 @@
-### all_data_types
-| Field       | Type                  | Null   | Key   | Default                | Extra                            |
-|-------------|-----------------------|--------|-------|------------------------|----------------------------------|
-| `char_`     | `char(12)`            | `NO`   | `PRI` | `NULL`                 |                                  |
-| `varchar_`  | `varchar(120)`        | `YES`  |       | `NULL`                 |                                  |
-| `boolean_`  | `tinyint(1)`          | `YES`  |       | `NULL`                 |                                  |
-| `tinyint_`  | `tinyint(3) unsigned` | `NO`   |       | `NULL`                 |                                  |
-| `smallint_` | `smallint(6)`         | `NO`   |       | `31`                   |                                  |
-| `int_`      | `int(11)`             | `YES`  |       | `NULL`                 |                                  |
-| `decimal_`  | `decimal(3,0)`        | `YES`  |       | `NULL`                 |                                  |
-| `numeric_`  | `decimal(3,2)`        | `NO`   |       | `NULL`                 |                                  |
-| `real_`     | `double`              | `NO`   |       | `0`                    |                                  |
-| `float_`    | `float`               | `YES`  |       | `NULL`                 |                                  |
-| `double_p`  | `double`              | `YES`  |       | `NULL`                 |                                  |
-| `date_`     | `date`                | `YES`  |       | `NULL`                 |                                  |
-| `time_`     | `time`                | `YES`  |       | `NULL`                 |                                  |
-| `ts`        | `timestamp(6)`        | `NO`   |       | `CURRENT_TIMESTAMP(6)` | `on update CURRENT_TIMESTAMP(6)` |
-| `bin_`      | `binary(1)`           | `YES`  |       | `NULL`                 |                                  |
-| `varbin_`   | `varbinary(255)`      | `YES`  |       | `NULL`                 |                                  |
-| `blob_`     | `blob`                | `YES`  |       | `NULL`                 |                                  |
-| `longblog_` | `longblob`            | `YES`  |       | `NULL`                 |                                  |
+## all_data_types
+#### SCHEMA
+|    FIELD    |         TYPE          | NULL  |  KEY  |        DEFAULT         |              EXTRA               |
+|-------------|-----------------------|-------|-------|------------------------|----------------------------------|
+| `char_`     | `char(12)`            | `NO`  | `PRI` |                        |                                  |
+| `varchar_`  | `varchar(120)`        | `YES` |       |                        |                                  |
+| `boolean_`  | `tinyint(1)`          | `YES` |       |                        |                                  |
+| `tinyint_`  | `tinyint(3) unsigned` | `NO`  |       |                        |                                  |
+| `smallint_` | `smallint(6)`         | `NO`  |       | `31`                   |                                  |
+| `int_`      | `int(11)`             | `YES` |       |                        |                                  |
+| `decimal_`  | `decimal(3,0)`        | `YES` |       |                        |                                  |
+| `numeric_`  | `decimal(3,2)`        | `NO`  |       |                        |                                  |
+| `real_`     | `double`              | `NO`  |       | `0`                    |                                  |
+| `float_`    | `float`               | `YES` |       |                        |                                  |
+| `double_p`  | `double`              | `YES` |       |                        |                                  |
+| `date_`     | `date`                | `YES` |       |                        |                                  |
+| `time_`     | `time`                | `YES` |       |                        |                                  |
+| `ts`        | `timestamp(6)`        | `NO`  |       | `CURRENT_TIMESTAMP(6)` | `on update CURRENT_TIMESTAMP(6)` |
+| `bin_`      | `binary(1)`           | `YES` |       |                        |                                  |
+| `varbin_`   | `varbinary(255)`      | `YES` |       |                        |                                  |
+| `blob_`     | `blob`                | `YES` |       |                        |                                  |
+| `longblog_` | `longblob`            | `YES` |       |                        |                                  |
+#### INDEXES
+| KEY NAME  | UNIQUE |  COLUMNS  |
+|-----------|--------|-----------|
+| `PRIMARY` | `true` | `(char_)` |
 
-### goose_db_version
-| Field        | Type                  | Null   | Key   | Default             | Extra            |
-|--------------|-----------------------|--------|-------|---------------------|------------------|
-| `id`         | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`              | `auto_increment` |
-| `version_id` | `bigint(20)`          | `NO`   |       | `NULL`              |                  |
-| `is_applied` | `tinyint(1)`          | `NO`   |       | `NULL`              |                  |
-| `tstamp`     | `timestamp`           | `YES`  |       | `CURRENT_TIMESTAMP` |                  |
+## companies
+#### SCHEMA
+|    FIELD     |   TYPE    | NULL |  KEY  | DEFAULT | EXTRA |
+|--------------|-----------|------|-------|---------|-------|
+| `company_id` | `int(11)` | `NO` | `PRI` | `0`     |       |
+#### INDEXES
+| KEY NAME  | UNIQUE |    COLUMNS     |
+|-----------|--------|----------------|
+| `PRIMARY` | `true` | `(company_id)` |
 
-### persons
-| Field        | Type           | Null   | Key   | Default   | Extra   |
-|--------------|----------------|--------|-------|-----------|---------|
-| `person_id`  | `int(11)`      | `YES`  |       | `NULL`    |         |
-| `last_name`  | `varchar(255)` | `YES`  |       | `NULL`    |         |
-| `first_name` | `varchar(255)` | `YES`  |       | `NULL`    |         |
-| `address`    | `varchar(255)` | `YES`  |       | `NULL`    |         |
-| `city`       | `varchar(255)` | `YES`  |       | `NULL`    |         |
+## employees
+#### SCHEMA
+|    FIELD     |   TYPE    | NULL |  KEY  | DEFAULT | EXTRA |
+|--------------|-----------|------|-------|---------|-------|
+| `company_id` | `int(11)` | `NO` | `PRI` | `0`     |       |
+| `person_id`  | `int(11)` | `NO` | `PRI` | `0`     |       |
+#### INDEXES
+|        KEY NAME        | UNIQUE  |          COLUMNS          |
+|------------------------|---------|---------------------------|
+| `PRIMARY`              | `true`  | `(company_id, person_id)` |
+| `fk_persons_person_id` | `false` | `(person_id)`             |
 
-### random_times
-| Field       | Type                  | Null   | Key   | Default                | Extra            |
-|-------------|-----------------------|--------|-------|------------------------|------------------|
-| `id`        | `bigint(20) unsigned` | `NO`   | `PRI` | `NULL`                 | `auto_increment` |
-| `created`   | `timestamp(6)`        | `NO`   |       | `CURRENT_TIMESTAMP(6)` |                  |
-| `timestamp` | `datetime(6)`         | `NO`   |       | `NULL`                 |                  |
+## goose_db_version
+#### SCHEMA
+|    FIELD     |         TYPE          | NULL  |  KEY  |       DEFAULT       |      EXTRA       |
+|--------------|-----------------------|-------|-------|---------------------|------------------|
+| `id`         | `bigint(20) unsigned` | `NO`  | `PRI` |                     | `auto_increment` |
+| `version_id` | `bigint(20)`          | `NO`  |       |                     |                  |
+| `is_applied` | `tinyint(1)`          | `NO`  |       |                     |                  |
+| `tstamp`     | `timestamp`           | `YES` |       | `CURRENT_TIMESTAMP` |                  |
+#### INDEXES
+| KEY NAME  | UNIQUE | COLUMNS |
+|-----------|--------|---------|
+| `PRIMARY` | `true` | `(id)`  |
+| `id`      | `true` | `(id)`  |
+
+## persons
+#### SCHEMA
+|    FIELD     |      TYPE      | NULL  |  KEY  | DEFAULT | EXTRA |
+|--------------|----------------|-------|-------|---------|-------|
+| `person_id`  | `int(11)`      | `NO`  | `PRI` | `0`     |       |
+| `last_name`  | `varchar(255)` | `YES` | `MUL` |         |       |
+| `first_name` | `varchar(255)` | `YES` |       |         |       |
+| `address`    | `varchar(255)` | `YES` |       |         |       |
+| `city`       | `varchar(255)` | `YES` |       |         |       |
+#### INDEXES
+|           KEY NAME            | UNIQUE  |          COLUMNS          |
+|-------------------------------|---------|---------------------------|
+| `PRIMARY`                     | `true`  | `(person_id)`             |
+| `index__last_name`            | `false` | `(last_name)`             |
+| `index__last_name_first_name` | `false` | `(last_name, first_name)` |
+
+## random_times
+#### SCHEMA
+|    FIELD    |         TYPE          | NULL |  KEY  |        DEFAULT         |      EXTRA       |
+|-------------|-----------------------|------|-------|------------------------|------------------|
+| `id`        | `bigint(20) unsigned` | `NO` | `PRI` |                        | `auto_increment` |
+| `created`   | `timestamp(6)`        | `NO` |       | `CURRENT_TIMESTAMP(6)` |                  |
+| `timestamp` | `datetime(6)`         | `NO` |       |                        |                  |
+#### INDEXES
+| KEY NAME  | UNIQUE | COLUMNS |
+|-----------|--------|---------|
+| `PRIMARY` | `true` | `(id)`  |

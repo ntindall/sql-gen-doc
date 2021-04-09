@@ -6,13 +6,30 @@ CREATE TABLE IF NOT EXISTS random_times (
   timestamp         DATETIME(6) NOT NULL
 ) ENGINE=INNODB, CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
+
+CREATE TABLE IF NOT EXISTS companies (
+  company_id   INT,
+  PRIMARY KEY (company_id)
+);
+
 CREATE TABLE IF NOT EXISTS persons (
   person_id         INT,
   last_name         VARCHAR(255),
   first_name        VARCHAR(255),
   address           VARCHAR(255),
-  city              VARCHAR(255)
+  city              VARCHAR(255),
+  PRIMARY KEY (person_id),
+  INDEX index__last_name (last_name),
+  INDEX index__last_name_first_name (last_name,first_name)
 ) ENGINE=INNODB, CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+
+CREATE TABLE IF NOT EXISTS employees (
+  company_id   INT,
+  person_id    INT,
+  PRIMARY KEY (company_id, person_id),
+  FOREIGN KEY fk_companies_company_id (company_id) REFERENCES companies(company_id),
+  FOREIGN KEY fk_persons_person_id (person_id) REFERENCES persons (person_id)
+);
 
 CREATE TABLE IF NOT EXISTS all_data_types (
   char_             CHAR(12) NOT NULL PRIMARY KEY,
@@ -38,5 +55,7 @@ CREATE TABLE IF NOT EXISTS all_data_types (
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP TABLE IF EXISTS all_data_types;
+DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS persons;
 DROP TABLE IF EXISTS random_times;

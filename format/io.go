@@ -57,6 +57,22 @@ func DescribeTable(
 	return result, nil
 }
 
+// GetIndexDescriptions queries the database for information about the specified
+// table. The result is scanned into a IndexDescription struct.
+func GetIndexDescriptions(
+	ctx context.Context,
+	db *sqlx.DB,
+	tableName string,
+) (IndexDescriptions, error) {
+	result := []IndexDescription{}
+
+	if err := db.SelectContext(ctx, &result, "SHOW INDEXES FROM "+tableName); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // WriteToFile takes a filename and a markdown string and writes the markdown
 // to the file. If the file is annotated with markdown comments, the markdown
 // will be inserted in between the comments. e.g.
