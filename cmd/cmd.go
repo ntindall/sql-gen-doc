@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"flag"
 	"fmt"
@@ -46,7 +47,7 @@ func Execute() {
 		logger.Fatalf("couldn't query database for tables. reason: %s", err)
 	}
 
-	markdown := ""
+	markdown := &bytes.Buffer{}
 	for idx, tableName := range tables {
 		columns, err := format.DescribeTable(ctx, db, tableName)
 		if err != nil {
@@ -63,17 +64,23 @@ func Execute() {
 			logger.Fatalf("couldn't convert data to logical indexes", tableName, err)
 		}
 
-		markdown += format.CreateTableMarkdown(tableName, columns, logicalIndexes)
-		if idx != len(tables)-1 {
-			markdown += "\n"
+		_, err = markdown.WriteString(format.CreateTableMarkdown(tableName, columns, logicalIndexes))
+		if err != nil {
+			logger.Fatalf("error writing to buffer", tableName, err)
 		}
-	}
 
-	if *flagOutfile == "" {
-		fmt.Fprintf(os.Stdout, markdown)
-		return
-	}
-	if err := format.WriteToFile(*flagOutfile, markdown); err != nil {
-		logger.Fatalln(err)
+		if idx != len(tables)-1 {
+			if _, err = markdown.WriteString("\n"); err != nil {
+				logger.Fatalf("error writing to buffer", tableName, err)
+			}
+		}
+
+		if *flagOutfile == "" {
+			fmt.Fprintf(os.Stdout, markdown.String())
+			return
+		}
+		if err := format.WriteToFile(*flagOutfile, markdown.String()); err != nil {
+			logger.Fatalln(err)
+		}
 	}
 }

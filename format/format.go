@@ -41,7 +41,6 @@ func CreateTableMarkdown(
 
 	// write the columns table to the buf
 	columnsTable.Render()
-	tableMarkdown.WriteString("\n")
 
 	// format the indexes
 	tableMarkdown.WriteString("#### INDEXES\n")
@@ -58,9 +57,8 @@ func CreateTableMarkdown(
 		})
 	}
 
-	// write the columns table to the buf
+	// write the indexes table to the buf
 	indexesTable.Render()
-	tableMarkdown.WriteString("\n")
 
 	return tableMarkdown.String()
 }
