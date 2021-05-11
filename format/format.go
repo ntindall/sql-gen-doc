@@ -8,10 +8,6 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-func makeTitle(s string) string {
-	return "### " + s + "\n"
-}
-
 func wrapBackTicks(s string) string {
 	if s == "" {
 		return s
