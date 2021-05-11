@@ -14,12 +14,12 @@ CREATE TABLE IF NOT EXISTS companies (
 
 CREATE TABLE IF NOT EXISTS persons (
   person_id         INT,
-  last_name         VARCHAR(255),
-  first_name        VARCHAR(255),
+  last_name         VARCHAR(100),
+  first_name        VARCHAR(100),
   address           VARCHAR(255),
   city              VARCHAR(255),
   PRIMARY KEY (person_id),
-  INDEX index__last_name (last_name),
+  INDEX index__last_name (last_name) COMMENT 'test comment on index',
   INDEX index__last_name_first_name (last_name,first_name)
 ) ENGINE=INNODB, CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS all_data_types (
   varchar_          VARCHAR(120),
   boolean_          BOOLEAN,
   tinyint_          TINYINT UNSIGNED NOT NULL,
-  smallint_         SMALLINT NOT NULL DEFAULT 31,
+  smallint_         SMALLINT NOT NULL DEFAULT 31 COMMENT 'test comment',
   int_              INTEGER,
   decimal_          DECIMAL(3),
   numeric_          NUMERIC(3,2) NOT NULL,
@@ -52,10 +52,12 @@ CREATE TABLE IF NOT EXISTS all_data_types (
   longblog_         LONGBLOB
 ) ENGINE=INNODB, CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
+ALTER TABLE employees
+    COMMENT 'this is a table comment';
+
 -- +goose Down
 -- SQL in this section is executed when the migration is rolled back.
 DROP TABLE IF EXISTS all_data_types;
 DROP TABLE IF EXISTS employees;
 DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS persons;
-DROP TABLE IF EXISTS random_times;

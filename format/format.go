@@ -18,22 +18,30 @@ func wrapBackTicks(s string) string {
 // CreateTableMarkdown takes the name of a table in a database and a list of
 // ColumnDescription and returns a formatted markdown table with the
 // corresponding data.
-func CreateTableMarkdown(
-	tableName string,
-	columns []ColumnDescription,
-	indexes []LogicalIndex,
-) string {
+func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescription, indexes []LogicalIndex) string {
 	tableMarkdown := bytes.NewBufferString(`## ` + tableName + "\n")
+
+	if comment != "" {
+		tableMarkdown.WriteString("\n" + comment + "\n\n")
+	}
 
 	tableMarkdown.WriteString("#### SCHEMA\n")
 	columnsTable := tablewriter.NewWriter(tableMarkdown)
-	columnsTable.SetHeader([]string{"FIELD", "TYPE", "NULL", "KEY", "DEFAULT", "EXTRA"})
+	columnsTable.SetHeader([]string{"FIELD", "TYPE", "NULL", "KEY", "DEFAULT", "EXTRA", "COMMENT"})
 	columnsTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	columnsTable.SetAutoWrapText(false)
 	columnsTable.SetCenterSeparator("|")
 
 	for _, col := range columns {
-		columnsTable.Append([]string{wrapBackTicks(col.Field), wrapBackTicks(col.Type), wrapBackTicks(col.Null), wrapBackTicks(col.Key), wrapBackTicks(col.Default.String), wrapBackTicks(col.Extra)})
+		columnsTable.Append([]string{
+			wrapBackTicks(col.Field),
+			wrapBackTicks(col.Type),
+			wrapBackTicks(col.Null),
+			wrapBackTicks(col.Key),
+			wrapBackTicks(col.Default.String),
+			wrapBackTicks(col.Extra),
+			wrapBackTicks(col.Comment),
+		})
 	}
 
 	// write the columns table to the buf
@@ -42,7 +50,7 @@ func CreateTableMarkdown(
 	// format the indexes
 	tableMarkdown.WriteString("#### INDEXES\n")
 	indexesTable := tablewriter.NewWriter(tableMarkdown)
-	indexesTable.SetHeader([]string{"KEY NAME", "UNIQUE", "COLUMNS"})
+	indexesTable.SetHeader([]string{"KEY NAME", "UNIQUE", "COLUMNS", "COMMENT"})
 	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	indexesTable.SetAutoWrapText(false)
 	indexesTable.SetCenterSeparator("|")
@@ -52,6 +60,7 @@ func CreateTableMarkdown(
 			wrapBackTicks(idx.KeyName),
 			wrapBackTicks(fmt.Sprintf("%t", !idx.NonUnique)),
 			wrapBackTicks(fmt.Sprintf(`(%s)`, strings.Join(idx.IndexedColumnNamesOrdered, ", "))),
+			wrapBackTicks(idx.Comment),
 		})
 	}
 
