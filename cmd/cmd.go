@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/go-sql-driver/mysql"
 	// We must import the mysql driver as it is required by sqlx.
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/ntindall/sql-gen-doc/format"
@@ -42,13 +43,19 @@ func Execute() {
 		logger.Fatalf("couldn't create database connection. reason: %s", err)
 	}
 
-	tables, err := format.ShowTables(ctx, db)
+	cfg, err := mysql.ParseDSN(*flagDSN)
+	if err != nil {
+		logger.Fatalf("failed to parse DSN: %v", err)
+	}
+
+	tables, err := format.GetTables(ctx, db, cfg.DBName)
 	if err != nil {
 		logger.Fatalf("couldn't query database for tables. reason: %s", err)
 	}
 
 	markdown := &bytes.Buffer{}
-	for idx, tableName := range tables {
+	for idx, table := range tables {
+		tableName := table.Name
 		columns, err := format.DescribeTable(ctx, db, tableName)
 		if err != nil {
 			logger.Fatalf("couldn't query database to describe table %s. reason: %s", tableName, err)
@@ -64,7 +71,7 @@ func Execute() {
 			logger.Fatalf("couldn't convert data to logical indexes: table %s. reason: %s", tableName, err)
 		}
 
-		_, err = markdown.WriteString(format.CreateTableMarkdown(tableName, columns, logicalIndexes))
+		_, err = markdown.WriteString(format.CreateTableMarkdown(tableName, table.Comment, columns, logicalIndexes))
 		if err != nil {
 			logger.Fatalf("error writing to buffer: table %s. reason: %s", tableName, err)
 		}
@@ -76,7 +83,7 @@ func Execute() {
 		}
 
 		if *flagOutfile == "" {
-			fmt.Fprintf(os.Stdout, markdown.String())
+			fmt.Fprint(os.Stdout, markdown.String())
 			return
 		}
 		if err := format.WriteToFile(*flagOutfile, markdown.String()); err != nil {

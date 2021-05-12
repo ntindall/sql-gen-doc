@@ -8,11 +8,12 @@ import (
 // IndexDescription contains all the data known about a specific index.
 // Note that some indexes may be related (e.g. in cases of clustered indexes).
 type IndexDescription struct {
-	Table      string `db:"Table"`
-	NonUnique  bool   `db:"Non_unique"`
-	KeyName    string `db:"Key_name"`
-	SeqInIndex int    `db:"Seq_in_index"`
-	ColumnName string `db:"Column_name"`
+	Table      string         `db:"Table"`
+	NonUnique  bool           `db:"Non_unique"`
+	KeyName    string         `db:"Key_name"`
+	SeqInIndex int            `db:"Seq_in_index"`
+	ColumnName string         `db:"Column_name"`
+	Comment    sql.NullString `db:"Comment"`
 
 	// Not used (yet)
 	Collation    sql.NullString `db:"Collation"`
@@ -21,7 +22,6 @@ type IndexDescription struct {
 	Packed       sql.NullString `db:"Packed"`
 	Null         sql.NullString `db:"Null"`
 	IndexType    sql.NullString `db:"Index_type"`
-	Comment      sql.NullString `db:"Comment"`
 	IndexComment sql.NullString `db:"Index_comment"`
 }
 
@@ -41,6 +41,7 @@ func (descs IndexDescriptions) ConvertToLogicalIndexes() ([]LogicalIndex, error)
 				Table:     description.Table,
 				NonUnique: description.NonUnique,
 				KeyName:   description.KeyName,
+				Comment:   description.Comment.String,
 			}
 		}
 
@@ -76,4 +77,5 @@ type LogicalIndex struct {
 	NonUnique                 bool
 	KeyName                   string
 	IndexedColumnNamesOrdered []string
+	Comment                   string
 }

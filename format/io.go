@@ -26,15 +26,23 @@ func CreateDatabaseConnection(
 	return db, nil
 }
 
-// ShowTables queries the database and returns a list of the tables that
-// are present in the database.
-func ShowTables(
-	ctx context.Context,
-	db *sqlx.DB,
-) ([]string, error) {
-	result := []string{}
+// GetTablesRow see GetTablesRow
+type GetTablesRow struct {
+	Name    string
+	Comment string
+}
 
-	if err := db.SelectContext(ctx, &result, "SHOW TABLES"); err != nil {
+// GetTables queries the database and returns a list of the tables that
+// are present in the database.
+func GetTables(ctx context.Context, db *sqlx.DB, dbName string) ([]GetTablesRow, error) {
+	result := []GetTablesRow{}
+
+	if err := db.SelectContext(ctx, &result,
+		`SELECT table_name AS name, table_comment AS comment 
+		FROM information_schema.tables 
+		WHERE table_schema = ?`,
+		dbName,
+	); err != nil {
 		return nil, err
 	}
 
@@ -50,7 +58,8 @@ func DescribeTable(
 ) ([]ColumnDescription, error) {
 	result := []ColumnDescription{}
 
-	if err := db.SelectContext(ctx, &result, "DESCRIBE "+tableName); err != nil {
+	// use show full columns rather than describe to access comments
+	if err := db.SelectContext(ctx, &result, "SHOW FULL COLUMNS FROM "+tableName); err != nil {
 		return nil, err
 	}
 
