@@ -23,7 +23,7 @@ type IndexDescription struct {
 	Null         sql.NullString `db:"Null"`
 	IndexType    sql.NullString `db:"Index_type"`
 	IndexComment sql.NullString `db:"Index_comment"`
-	Visible      sql.NullBool   `db:"Visible"`
+	Visible      sql.NullString `db:"Visible"`
 	Expression   sql.NullString `db:"Expression"`
 }
 
