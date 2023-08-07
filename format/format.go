@@ -61,6 +61,7 @@ func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescr
 			wrapBackTicks(fmt.Sprintf("%t", !idx.NonUnique)),
 			wrapBackTicks(fmt.Sprintf(`(%s)`, strings.Join(idx.IndexedColumnNamesOrdered, ", "))),
 			wrapBackTicks(idx.Comment),
+			wrapBackTicks(idx.Expression),
 		})
 	}
 
