@@ -50,7 +50,7 @@ func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescr
 	// format the indexes
 	tableMarkdown.WriteString("#### INDEXES\n")
 	indexesTable := tablewriter.NewWriter(tableMarkdown)
-	indexesTable.SetHeader([]string{"KEY NAME", "UNIQUE", "COLUMNS", "COMMENT"})
+	indexesTable.SetHeader([]string{"KEY NAME", "UNIQUE", "COLUMNS", "COMMENT", "EXPRESSION"})
 	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	indexesTable.SetAutoWrapText(false)
 	indexesTable.SetCenterSeparator("|")
