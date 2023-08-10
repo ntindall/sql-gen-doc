@@ -12,8 +12,9 @@ type IndexDescription struct {
 	NonUnique  bool           `db:"Non_unique"`
 	KeyName    string         `db:"Key_name"`
 	SeqInIndex int            `db:"Seq_in_index"`
-	ColumnName string         `db:"Column_name"`
+	ColumnName sql.NullString `db:"Column_name"`
 	Comment    sql.NullString `db:"Comment"`
+	Expression sql.NullString `db:"Expression"`
 
 	// Not used (yet)
 	Collation    sql.NullString `db:"Collation"`
@@ -24,7 +25,6 @@ type IndexDescription struct {
 	IndexType    sql.NullString `db:"Index_type"`
 	IndexComment sql.NullString `db:"Index_comment"`
 	Visible      sql.NullString `db:"Visible"`
-	Expression   sql.NullString `db:"Expression"`
 }
 
 // IndexDescriptions is a set of index descriptions
@@ -40,14 +40,15 @@ func (descs IndexDescriptions) ConvertToLogicalIndexes() ([]LogicalIndex, error)
 		var ok bool
 		if li, ok = indices[description.KeyName]; !ok {
 			li = LogicalIndex{
-				Table:     description.Table,
-				NonUnique: description.NonUnique,
-				KeyName:   description.KeyName,
-				Comment:   description.Comment.String,
+				Table:      description.Table,
+				NonUnique:  description.NonUnique,
+				KeyName:    description.KeyName,
+				Comment:    description.Comment.String,
+				Expression: description.Expression.String,
 			}
 		}
 
-		li.IndexedColumnNamesOrdered = append(li.IndexedColumnNamesOrdered, description.ColumnName)
+		li.IndexedColumnNamesOrdered = append(li.IndexedColumnNamesOrdered, description.ColumnName.String)
 
 		if len(li.IndexedColumnNamesOrdered) != description.SeqInIndex {
 			return nil, fmt.Errorf("internal logic error: expecting for indexed columns to always be returned in sequence")
@@ -80,4 +81,5 @@ type LogicalIndex struct {
 	KeyName                   string
 	IndexedColumnNamesOrdered []string
 	Comment                   string
+	Expression                string
 }
