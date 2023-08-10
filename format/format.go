@@ -50,19 +50,38 @@ func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescr
 	// format the indexes
 	tableMarkdown.WriteString("#### INDEXES\n")
 	indexesTable := tablewriter.NewWriter(tableMarkdown)
-	indexesTable.SetHeader([]string{"KEY NAME", "UNIQUE", "COLUMNS", "COMMENT", "EXPRESSION"})
+
+	// EXPRESSION is a new column type introduced in MySQL 8.0.
+	// Only include this header if one of the indexes has an expression.
+	hasExpression := false
+	for _, idx := range indexes {
+		if idx.Expression != "" {
+			hasExpression = true
+			break
+		}
+	}
+	header := []string{"KEY NAME", "UNIQUE", "COLUMNS", "COMMENT"}
+	if hasExpression {
+		header = []string{"KEY NAME", "UNIQUE", "COLUMNS", "COMMENT", "EXPRESSION"}
+	}
+
+	indexesTable.SetHeader(header)
 	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	indexesTable.SetAutoWrapText(false)
 	indexesTable.SetCenterSeparator("|")
 
 	for _, idx := range indexes {
-		indexesTable.Append([]string{
+		indexRow := []string{
 			wrapBackTicks(idx.KeyName),
 			wrapBackTicks(fmt.Sprintf("%t", !idx.NonUnique)),
 			wrapBackTicks(fmt.Sprintf(`(%s)`, strings.Join(idx.IndexedColumnNamesOrdered, ", "))),
 			wrapBackTicks(idx.Comment),
-			wrapBackTicks(idx.Expression),
-		})
+		}
+		// Only include this if one of the indexes in the table has an expression.
+		if hasExpression {
+			indexRow = append(indexRow, wrapBackTicks(idx.Expression))
+		}
+		indexesTable.Append(indexRow)
 	}
 
 	// write the indexes table to the buf
