@@ -18,7 +18,7 @@ func wrapBackTicks(s string) string {
 // CreateTableMarkdown takes the name of a table in a database and a list of
 // ColumnDescription and returns a formatted markdown table with the
 // corresponding data.
-func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescription, indexes []LogicalIndex) string {
+func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescription, indexes []LogicalIndex, foreignKeys []ForeignDescription) string {
 	tableMarkdown := bytes.NewBufferString(`## ` + tableName + "\n")
 
 	if comment != "" {
@@ -27,10 +27,7 @@ func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescr
 
 	tableMarkdown.WriteString("#### SCHEMA\n")
 	columnsTable := tablewriter.NewWriter(tableMarkdown)
-	columnsTable.SetHeader([]string{"FIELD", "TYPE", "NULL", "KEY", "DEFAULT", "EXTRA", "COMMENT"})
-	columnsTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	columnsTable.SetAutoWrapText(false)
-	columnsTable.SetCenterSeparator("|")
+	formatTable(columnsTable, []string{"FIELD", "TYPE", "NULL", "KEY", "DEFAULT", "EXTRA", "COMMENT"})
 
 	for _, col := range columns {
 		columnsTable.Append([]string{
@@ -65,10 +62,7 @@ func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescr
 		header = []string{"KEY NAME", "UNIQUE", "COLUMNS", "COMMENT", "EXPRESSION"}
 	}
 
-	indexesTable.SetHeader(header)
-	indexesTable.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	indexesTable.SetAutoWrapText(false)
-	indexesTable.SetCenterSeparator("|")
+	formatTable(indexesTable, header)
 
 	for _, idx := range indexes {
 		indexRow := []string{
@@ -87,7 +81,30 @@ func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescr
 	// write the indexes table to the buf
 	indexesTable.Render()
 
+	if len(foreignKeys) != 0 {
+		tableMarkdown.WriteString("#### Foreign Key\n")
+		foreignKeyTable := tablewriter.NewWriter(tableMarkdown)
+		formatTable(foreignKeyTable, []string{"KEY NAME", "TABLE NAME", "COLUMN NAME", "REFERENCES"})
+
+		for _, fk := range foreignKeys {
+			foreignKeyTable.Append([]string{
+				wrapBackTicks(fk.ConstraintName),
+				wrapBackTicks(fk.TableName),
+				wrapBackTicks(fk.ColumnName),
+				wrapBackTicks(fmt.Sprintf("%s.%s", fk.ReferencedTableName, fk.ReferencedColumnName)),
+			})
+		}
+		foreignKeyTable.Render()
+	}
+
 	return tableMarkdown.String()
+}
+
+func formatTable(table *tablewriter.Table, header []string) {
+	table.SetHeader(header)
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetAutoWrapText(false)
+	table.SetCenterSeparator("|")
 }
 
 func insertBetweenTags(

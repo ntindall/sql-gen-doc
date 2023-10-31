@@ -1,8 +1,12 @@
 package format
 
 import (
+	"bytes"
+	"fmt"
+	"strings"
 	"testing"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -73,4 +77,44 @@ markdown
 			assert.Equal(t, tc.expectation, actual)
 		}
 	}
+}
+
+func TestRenderForeignKeys(t *testing.T) {
+
+	testForeignKeys := []ForeignDescription{
+		{
+			ConstraintName:       "fk1",
+			TableName:            "table1",
+			ColumnName:           "col1",
+			ReferencedTableName:  "reftable",
+			ReferencedColumnName: "refcol",
+		},
+	}
+
+	expected := `
+| KEY NAME | TABLE NAME | COLUMN NAME |    REFERENCES     |
+|----------|------------|-------------|-------------------|
+| ` + "`fk1`   " + ` | ` + "`table1`  " + ` | ` + "`col1`     " + ` | ` + "`reftable.refcol`" + ` |
+`
+
+	buf := &bytes.Buffer{}
+
+	foreignKeyTable := tablewriter.NewWriter(buf)
+	formatTable(foreignKeyTable, []string{"KEY NAME", "TABLE NAME", "COLUMN NAME", "REFERENCES"})
+
+	for _, fk := range testForeignKeys {
+		foreignKeyTable.Append([]string{
+			wrapBackTicks(fk.ConstraintName),
+			wrapBackTicks(fk.TableName),
+			wrapBackTicks(fk.ColumnName),
+			wrapBackTicks(fmt.Sprintf("%s.%s", fk.ReferencedTableName, fk.ReferencedColumnName)),
+		})
+	}
+
+	foreignKeyTable.Render()
+
+	actual := buf.String()
+
+	assert.Equal(t, strings.TrimLeft(expected, "\n"), strings.TrimLeft(actual, "\n"))
+
 }

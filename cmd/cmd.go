@@ -11,6 +11,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	// We must import the mysql driver as it is required by sqlx.
 	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/ntindall/sql-gen-doc/format"
 )
 
@@ -71,7 +72,12 @@ func Execute() {
 			logger.Fatalf("couldn't convert data to logical indexes: table %s. reason: %s", tableName, err)
 		}
 
-		_, err = markdown.WriteString(format.CreateTableMarkdown(tableName, table.Comment, columns, logicalIndexes))
+		foreignkeyData, err := format.GetForeignKeyDescriptions(ctx, db, tableName)
+		if err != nil {
+			logger.Fatalf("couldn't query database to fetch foreign key data: table %s. reason: %s", tableName, err)
+		}
+
+		_, err = markdown.WriteString(format.CreateTableMarkdown(tableName, table.Comment, columns, logicalIndexes, foreignkeyData))
 		if err != nil {
 			logger.Fatalf("error writing to buffer: table %s. reason: %s", tableName, err)
 		}
