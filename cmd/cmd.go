@@ -72,12 +72,12 @@ func Execute() {
 			logger.Fatalf("couldn't convert data to logical indexes: table %s. reason: %s", tableName, err)
 		}
 
-		foreignkeyData, err := format.GetForeignKeyDescriptions(ctx, db, tableName)
+		foreignKeyData, err := format.GetForeignKeyDescriptions(ctx, db, tableName)
 		if err != nil {
 			logger.Printf("couldn't query database to fetch foreign key data: table %s. reason: %s", tableName, err)
 		}
 
-		_, err = markdown.WriteString(format.CreateTableMarkdown(tableName, table.Comment, columns, logicalIndexes, foreignkeyData))
+		_, err = markdown.WriteString(format.CreateTableMarkdown(tableName, table.Comment, columns, logicalIndexes, foreignKeyData))
 		if err != nil {
 			logger.Fatalf("error writing to buffer: table %s. reason: %s", tableName, err)
 		}
