@@ -8,6 +8,3 @@ type ForeignDescription struct {
 	ReferencedTableName  string `db:"referenced_table_name"`
 	ReferencedColumnName string `db:"referenced_column_name"`
 }
-
-// ForeignDescriptions is a set of foreign descriptions
-type ForeignDescriptions []ForeignDescription

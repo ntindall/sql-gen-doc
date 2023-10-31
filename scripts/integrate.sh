@@ -28,9 +28,9 @@ had_err=0
 
 # test case 1
 log "testing create a new file"
-./bin/sql-gen-doc -dsn 'user:password@tcp(mysql:3306)/example' -o tmp/example.md
-cp tmp/example.md logs/out1.md
-if [ "$(diff --text tmp/example.md fixtures/expected1.md |& tee logs/test1.diff)" ]; then
+./bin/sql-gen-doc -dsn 'user:password@tcp(mysql:3306)/example' -o tmp/example1.md
+cp tmp/example1.md logs/out1.md
+if [ "$(diff --text tmp/example1.md fixtures/expected1.md |& tee logs/test1.diff)" ]; then
   cat tmp/example1.md
   log_error "output did not match fixture -- see logs/test1.diff"
   had_err=1

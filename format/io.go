@@ -87,7 +87,7 @@ func GetForeignKeyDescriptions(
 	ctx context.Context,
 	db *sqlx.DB,
 	tableName string,
-) (ForeignDescriptions, error) {
+) ([]ForeignDescription, error) {
 	var result []ForeignDescription
 
 	if err := db.SelectContext(ctx, &result,
