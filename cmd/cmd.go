@@ -74,7 +74,7 @@ func Execute() {
 
 		foreignkeyData, err := format.GetForeignKeyDescriptions(ctx, db, tableName)
 		if err != nil {
-			logger.Fatalf("couldn't query database to fetch foreign key data: table %s. reason: %s", tableName, err)
+			logger.Printf("couldn't query database to fetch foreign key data: table %s. reason: %s", tableName, err)
 		}
 
 		_, err = markdown.WriteString(format.CreateTableMarkdown(tableName, table.Comment, columns, logicalIndexes, foreignkeyData))
