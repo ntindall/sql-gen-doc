@@ -82,6 +82,27 @@ func GetIndexDescriptions(
 	return result, nil
 }
 
+// GetForeignKeyDescriptions queries INFORMATION_SCHEMA.KEY_COLUMN_USAGE table about references information
+func GetForeignKeyDescriptions(
+	ctx context.Context,
+	db *sqlx.DB,
+	tableName string,
+) (ForeignDescriptions, error) {
+	result := []ForeignDescription{}
+
+	if err := db.SelectContext(ctx, &result,
+		`SELECT table_name AS table_name, column_name AS column_name, constraint_name AS constraint_name, referenced_table_name AS referenced_table_name, referenced_column_name AS referenced_column_name
+		FROM information_schema.key_column_usage
+		WHERE table_name = ? AND referenced_table_name IS NOT NULL
+		ORDER BY 1,2`,
+		tableName,
+	); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // WriteToFile takes a filename and a markdown string and writes the markdown
 // to the file. If the file is annotated with markdown comments, the markdown
 // will be inserted in between the comments. e.g.

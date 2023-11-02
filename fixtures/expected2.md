@@ -52,6 +52,11 @@ this is a table comment
 |------------------------|---------|---------------------------|---------|
 | `PRIMARY`              | `true`  | `(company_id, person_id)` |         |
 | `fk_persons_person_id` | `false` | `(person_id)`             |         |
+#### Foreign Key
+|      KEY NAME      | TABLE NAME  | COLUMN NAME  |       REFERENCES       |
+|--------------------|-------------|--------------|------------------------|
+| `employees_ibfk_1` | `employees` | `company_id` | `companies.company_id` |
+| `employees_ibfk_2` | `employees` | `person_id`  | `persons.person_id`    |
 
 ## goose_db_version
 #### SCHEMA
