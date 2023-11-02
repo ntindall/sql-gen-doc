@@ -18,7 +18,7 @@ func wrapBackTicks(s string) string {
 // CreateTableMarkdown takes the name of a table in a database and a list of
 // ColumnDescription and returns a formatted markdown table with the
 // corresponding data.
-func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescription, indexes []LogicalIndex, foreignKeys []ForeignDescription) string {
+func CreateTableMarkdown(tableName string, comment string, columns []ColumnDescription, indexes []LogicalIndex, foreignKeys ForeignDescriptions) string {
 	tableMarkdown := bytes.NewBufferString(`## ` + tableName + "\n")
 
 	if comment != "" {

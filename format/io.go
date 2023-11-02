@@ -87,11 +87,11 @@ func GetForeignKeyDescriptions(
 	ctx context.Context,
 	db *sqlx.DB,
 	tableName string,
-) ([]ForeignDescription, error) {
-	var result []ForeignDescription
+) (ForeignDescriptions, error) {
+	result := []ForeignDescription{}
 
 	if err := db.SelectContext(ctx, &result,
-		`SELECT table_name, column_name, constraint_name, referenced_table_name, referenced_column_name
+		`SELECT table_name AS table_name, column_name AS column_name, constraint_name AS constraint_name, referenced_table_name AS referenced_table_name, referenced_column_name AS referenced_column_name
 		FROM information_schema.key_column_usage
 		WHERE table_name = ? AND referenced_table_name IS NOT NULL
 		ORDER BY 1,2`,
