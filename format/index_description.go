@@ -25,6 +25,7 @@ type IndexDescription struct {
 	IndexType    sql.NullString `db:"Index_type"`
 	IndexComment sql.NullString `db:"Index_comment"`
 	Visible      sql.NullString `db:"Visible"`
+	Clustered    sql.NullString `db:"Clustered"`
 }
 
 // IndexDescriptions is a set of index descriptions
