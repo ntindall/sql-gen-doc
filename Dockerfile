@@ -1,4 +1,4 @@
-FROM circleci/golang:1.20
+FROM circleci/golang:1.16
 USER root
 WORKDIR /go/src/github.com/ntindall/sql-gen-doc
 
