@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/ntindall/sql-gen-doc
 RUN apt-get update \
    && apt-get install -y --force-yes --no-install-recommends\
    default-mysql-client \
-   default-libmysqlclient-dev \
+   default-libmysqlclient-dev
 
 COPY Makefile ./
 ADD scripts/logs.sh ./scripts/
