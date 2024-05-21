@@ -7,6 +7,6 @@ import (
 	//
 	// if you are reading this and know of a better way to do this with
 	// `go vendor` / `go.mod` -- please let me know.
-	_ "github.com/pressly/goose/cmd/goose"
+	_ "github.com/pressly/goose/v3/cmd/goose"
 	_ "golang.org/x/lint/golint"
 )

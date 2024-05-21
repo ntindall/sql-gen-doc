@@ -1,7 +1,7 @@
 GO_SRC_FILES = $(shell find . -type f -name '*.go' | sed /vendor/d )
 GO_SRC_PACKAGES =$(shell go list ./... | sed /vendor/d  | sed /imports/d)
 GOLINT_SRC = ./vendor/golang.org/x/lint/golint
-GOOSE_SRC = ./vendor/github.com/pressly/goose/cmd/goose
+GOOSE_SRC = ./vendor/github.com/pressly/goose/v3/cmd/goose
 
 # vanity
 GREEN = \033[0;32m
