@@ -19,7 +19,7 @@ mysql -h mysql -uroot -ppassword -e "CREATE DATABASE IF NOT EXISTS example; GRAN
 
 
 log "migrating database down to the beginning"
-make migrate-reset
+make migrate-reset || echo "ERROR" # allow fail through because the command will return an error if no tables exist
 
 log "bringing database back up"
 make migrate-up
