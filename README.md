@@ -22,10 +22,10 @@ Usage of ./bin/sql-gen-doc:
       a data source name for the database, e.g. user:password@tcp(mysql:3306)/database_name
   -o string
       the outfile to write the documentation to, if no outfile is specified, the output is written to stdout
-  --alphabetical
+  --sort-tables
       outputs tables in alphabetical order
 
-$ ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate' -o outfile.md --alphabetical
+$ ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate' -o outfile.md --sort-tables
 ```
 
 Additionally, the markdown file can be annotated with comments in order to have
