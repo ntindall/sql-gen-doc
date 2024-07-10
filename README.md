@@ -25,7 +25,7 @@ Usage of ./bin/sql-gen-doc:
   --alphabetical
       outputs tables in alphabetical order
 
-$ ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate' -o outfile.md
+$ ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate' -o outfile.md --alphabetical
 ```
 
 Additionally, the markdown file can be annotated with comments in order to have
