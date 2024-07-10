@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"bytes"
+	"cmp"
 	"context"
 	"flag"
 	"fmt"
 	"log"
 	"os"
+	"slices"
 
 	"github.com/go-sql-driver/mysql"
 	// We must import the mysql driver as it is required by sqlx.
@@ -18,6 +20,7 @@ import (
 var (
 	flagDSN     *string
 	flagOutfile *string
+	sortTables  *bool
 	logger      *log.Logger
 )
 
@@ -25,6 +28,7 @@ func init() {
 	// Parse flags
 	flagDSN = flag.String("dsn", "", "a data source name for the database, e.g. user:password@tcp(mysql:3306)/database_name")
 	flagOutfile = flag.String("o", "", "the outfile to write the documentation to, if no outfile is specified, the output is written to stdout")
+	sortTables = flag.Bool("sort-tables", false, "outputs tables in alphabetical order")
 	flag.Parse()
 
 	// Setup logging
@@ -52,6 +56,12 @@ func Execute() {
 	tables, err := format.GetTables(ctx, db, cfg.DBName)
 	if err != nil {
 		logger.Fatalf("couldn't query database for tables. reason: %s", err)
+	}
+
+	if *sortTables {
+		slices.SortFunc(tables, func(a, b format.GetTablesRow) int {
+			return cmp.Compare(a.Name, b.Name)
+		})
 	}
 
 	markdown := &bytes.Buffer{}
