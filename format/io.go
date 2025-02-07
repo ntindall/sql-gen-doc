@@ -93,7 +93,7 @@ func GetForeignKeyDescriptions(
 	if err := db.SelectContext(ctx, &result,
 		`SELECT table_name AS table_name, column_name AS column_name, constraint_name AS constraint_name, referenced_table_name AS referenced_table_name, referenced_column_name AS referenced_column_name
 		FROM information_schema.key_column_usage
-		WHERE table_name = ? AND referenced_table_name IS NOT NULL
+		WHERE constraint_schema = DATABASE() AND table_name = ? AND referenced_table_name IS NOT NULL
 		ORDER BY 1,2`,
 		tableName,
 	); err != nil {
