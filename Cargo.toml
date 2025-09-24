@@ -1,0 +1,23 @@
+[package]
+name = "sql-gen-doc"
+version = "0.1.0"
+edition = "2021"
+authors = ["SQL Gen Doc Team"]
+description = "A tool to automatically generate SQL documentation"
+
+[[bin]]
+name = "sql-gen-doc"
+path = "src/main.rs"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "mysql", "chrono"] }
+anyhow = "1.0"
+clap = { version = "4.4", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+regex = "1.5"
+url = "2.4"
+
+[dev-dependencies]
+tokio-test = "0.4"
