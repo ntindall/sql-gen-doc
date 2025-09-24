@@ -93,3 +93,5 @@ fn extract_database_name(dsn: &str) -> Result<String> {
     
     Err(anyhow::anyhow!("Could not extract database name from DSN"))
 }
+
+

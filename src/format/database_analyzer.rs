@@ -127,3 +127,5 @@ impl DatabaseAnalyzer {
         Ok(ForeignDescriptions(foreign_keys))
     }
 }
+
+
