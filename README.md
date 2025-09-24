@@ -1,67 +1,120 @@
 # sql-gen-doc
 [![GoDoc](https://godoc.org/github.com/ntindall/sql-gen-doc?status.svg)](https://godoc.org/github.com/ntindall/sql-gen-doc) [![CircleCI](https://circleci.com/gh/ntindall/sql-gen-doc.svg?style=svg)](https://circleci.com/gh/ntindall/sql-gen-doc)
 
-A tool to automatically generate sql documentation.
+A command-line tool to automatically generate comprehensive SQL database documentation in Markdown format. Connect to any MySQL database and generate detailed documentation including table schemas, column descriptions, indexes, and foreign key relationships.
 
 ## Installation
+
+### Using Go
 ```sh
-  go get -u github.com/ntindall/sql-gen-doc
+go get -u github.com/ntindall/sql-gen-doc
+```
+
+### Building from Source
+```sh
+git clone https://github.com/ntindall/sql-gen-doc.git
+cd sql-gen-doc
+go build -o sql-gen-doc ./cmd
 ```
 
 ## Usage
 
-`sql-gen-doc` will connect to a database and generate a markdown table
-corresponding to the current state of each table in the database. This is useful
-for databases that undergo frequent migrations. You can set up your CI to run
-this tool whenever a new migration is added.
+`sql-gen-doc` connects to a MySQL database and generates comprehensive Markdown documentation reflecting the current state of your database schema. This includes:
+
+- **Table descriptions**: Complete table schemas with column details
+- **Index information**: Primary keys, unique constraints, and regular indexes  
+- **Foreign key relationships**: Table relationships and constraints
+- **Column metadata**: Data types, constraints, and descriptions
+
+This tool is particularly useful for databases undergoing frequent migrations. Set up your CI/CD pipeline to run this tool whenever new migrations are added to keep your documentation up-to-date automatically.
+
+### Command Line Options
 
 ```sh
-$ ./bin/sql-gen-doc --help
-Usage of ./bin/sql-gen-doc:
+$ ./sql-gen-doc --help
+Usage of sql-gen-doc:
   -dsn string
       a data source name for the database, e.g. user:password@tcp(mysql:3306)/database_name
   -o string
-      the outfile to write the documentation to, if no outfile is specified, the output is written to stdout
+      the output file to write the documentation to (optional, writes to stdout if not specified)
   --sort-tables
       outputs tables in alphabetical order
 
-$ ./bin/sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_to_generate' -o outfile.md --sort-tables
+$ ./sql-gen-doc --banana
+Banana
+
+$ ./sql-gen-doc -dsn 'user:password@tcp(localhost:3306)/database_name' -o documentation.md --sort-tables
 ```
 
-Additionally, the markdown file can be annotated with comments in order to have
-`sql-gen-doc` insert the table into a specific location in an existing file. For this
-to work, just add these comments to your markdown file and then specify it as the
-outfile via the command line flag.
+### Updating Existing Documentation Files
+
+`sql-gen-doc` can intelligently update existing Markdown files by inserting generated documentation between special comment markers. This is perfect for maintaining documentation files that contain additional content.
+
+Simply add these comment tags to your existing Markdown file:
 
 ```markdown
-# fake markdown
+# Database Documentation
 
 <!-- sql-gen-doc BEGIN -->
-database documentation will go here!
+The database documentation will be automatically generated and inserted here.
 <!-- sql-gen-doc END -->
 
-more documentation!
+## Additional Notes
+More documentation content can be placed below or above the generated section.
 ```
 
-## Output
+When you run `sql-gen-doc` with this file as the output destination (`-o mydocs.md`), it will replace only the content between the comment markers while preserving everything else.
 
-See [fixtures/expected1.md](fixtures/expected1.md) and [fixtures/expected2.md](fixtures/expected2.md) for examples.
+## Example Output
+
+The generated documentation includes comprehensive table schemas formatted as Markdown tables. Check out the example outputs in:
+
+- [fixtures/expected1.md](fixtures/expected1.md) - Basic table documentation
+- [fixtures/expected2.md](fixtures/expected2.md) - Documentation with indexes and foreign keys
+
+Each table documentation includes:
+
+- **Column information**: Name, data type, constraints, and description
+- **Indexes**: Details about primary keys and indexes with columns
+- **Foreign keys**: Relationships between tables with referenced tables and columns
 
 ## Development
 
-1. This project uses `docker` and `docker-compose` for testing, see [here](https://docs.docker.com/compose/install/)
-   for the setup instructions for your operating system.
+### Prerequisites
 
-2. Run the following to clone and setup the project.
+- Go 1.21 or later
+- Docker and Docker Compose (for testing)
 
-  ```sh
-    git clone git@github.com:ntindall/sql-gen-doc.git $GOPATH/src/github.com/ntindall/sql-gen-doc
-    cd $GOPATH/src/github.com/ntindall/sql-gen-doc
-    make setup
-  ```
+### Setup
 
-3. Run the test suite
+1. Clone the repository:
 
   ```sh
-    make docker-test
+  git clone https://github.com/ntindall/sql-gen-doc.git
+  cd sql-gen-doc
   ```
+
+2. Install dependencies and setup the project:
+
+  ```sh
+  make setup
+  ```
+
+3. Run tests:
+
+  ```sh
+  make docker-test
+  ```
+
+### Running the Application
+
+Build and run the application:
+
+```sh
+go build -o sql-gen-doc ./cmd
+./sql-gen-doc -dsn "user:password@tcp(localhost:3306)/database_name" -o output.md
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.

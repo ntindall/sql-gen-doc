@@ -21,6 +21,7 @@ var (
 	flagDSN     *string
 	flagOutfile *string
 	sortTables  *bool
+	banana      *bool
 	logger      *log.Logger
 )
 
@@ -29,19 +30,26 @@ func init() {
 	flagDSN = flag.String("dsn", "", "a data source name for the database, e.g. user:password@tcp(mysql:3306)/database_name")
 	flagOutfile = flag.String("o", "", "the outfile to write the documentation to, if no outfile is specified, the output is written to stdout")
 	sortTables = flag.Bool("sort-tables", false, "outputs tables in alphabetical order")
+	banana = flag.Bool("banana", false, "output banana and exit")
 	flag.Parse()
 
 	// Setup logging
 	logger = log.New(os.Stderr, "[sql-gen-doc] ", log.Lshortfile)
 
-	// Validate flags
-	if *flagDSN == "" {
+	// Validate flags only if banana flag is not set
+	if *flagDSN == "" && !*banana {
 		logger.Fatalln("the -dsn flag must be provided")
 	}
 }
 
 // Execute is the primary driver for the sql-gen-doc functionality.
 func Execute() {
+	// Handle banana flag
+	if *banana {
+		fmt.Println("Banana")
+		return
+	}
+
 	ctx := context.Background()
 	db, err := format.CreateDatabaseConnection(ctx, *flagDSN)
 	if err != nil {
